@@ -125,7 +125,13 @@ function main() {
       }
       console.log((opts.dryRun ? 'would update ' : 'update     ') + label + ': ' + dest +
         ' (' + changes.length + ' managed file(s); v' + installedVersion(dest) + ' -> v' + VERSION + ')');
-      if (!opts.dryRun) cpSync(SOURCE, dest, {recursive:true, force:true});
+      if (!opts.dryRun) {
+        for (const rel of changes) {
+          const installed = join(dest, rel);
+          mkdirSync(dirname(installed), { recursive: true });
+          cpSync(join(SOURCE, rel), installed, { force: true });
+        }
+      }
       continue;
     }
     if (opts.action === 'install') {

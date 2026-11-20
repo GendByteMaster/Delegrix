@@ -1,7 +1,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { spawnSync } from 'node:child_process';
-import { mkdtempSync, existsSync, mkdirSync, readFileSync, writeFileSync, symlinkSync } from 'node:fs';
+import { mkdtempSync, existsSync, mkdirSync, readFileSync, writeFileSync, symlinkSync, statSync, utimesSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -91,6 +91,24 @@ test('update refreshes a managed installation and retains unrelated files', ()=>
  const again=run(dir,'update','--client','codex');
  assert.equal(again.code,0,again.output);
  assert.match(again.output,/up to date/);
+});
+
+test('update restores missing managed files without rewriting unchanged files', () => {
+  const dir = fixture();
+  const dest = join(dir, '.agents', 'skills', 'delegrix');
+  const skill = join(dest, 'SKILL.md');
+  const source = new URL('../skills/delegrix/', import.meta.url);
+  mkdirSync(dest, { recursive: true });
+  writeFileSync(skill, readFileSync(new URL('SKILL.md', source)));
+  const oldTime = new Date('2000-01-01T00:00:00Z');
+  utimesSync(skill, oldTime, oldTime);
+  const originalMtime = statSync(skill).mtimeMs;
+
+  const result = run(dir, 'update', '--client', 'codex');
+
+  assert.equal(result.code, 0, result.output);
+  assert.deepEqual(readFileSync(join(dest, 'agents', 'openai.yaml')), readFileSync(new URL('agents/openai.yaml', source)));
+  assert.equal(statSync(skill).mtimeMs, originalMtime, 'unchanged SKILL.md was rewritten');
 });
 
 test('update refuses missing and unmanaged installations', ()=>{
