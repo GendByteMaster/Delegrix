@@ -24,7 +24,7 @@ function options(argv) {
     else if (arg === '--version' || arg === '-v') result.action = 'version';
     else throw new Error('unknown argument: ' + arg);
   }
-  if (!['help', 'version', 'install', 'status', 'uninstall'].includes(result.action)) throw new Error('unknown command: ' + result.action);
+  if (!['help', 'version', 'install', 'update', 'status', 'uninstall'].includes(result.action)) throw new Error('unknown command: ' + result.action);
   if (result.client !== 'all' && !CLIENTS.includes(result.client)) throw new Error('unsupported client: ' + result.client);
   return result;
 }
@@ -70,6 +70,19 @@ function filesBelow(root, prefix = '') {
   return files;
 }
 
+function sourceChanges(dest) {
+  return filesBelow(SOURCE).filter(rel => {
+    const installed = join(dest, rel);
+    return !existsSync(installed) || !readFileSync(installed).equals(readFileSync(join(SOURCE, rel)));
+  });
+}
+
+function installedVersion(dest) {
+  const content = readFileSync(join(dest, 'SKILL.md'), 'utf8');
+  const match = content.match(/^\s+version:\s*["']?([a-zA-Z0-9.-]+)/m);
+  return match ? match[1] : 'unknown';
+}
+
 function removeManaged(dest) {
   const sourceFiles = filesBelow(SOURCE);
   for (const rel of sourceFiles) {
@@ -87,14 +100,32 @@ function removeManaged(dest) {
 function main() {
   const opts = options(process.argv.slice(2));
   if (opts.action === 'help') {
-    console.log('Delegrix v' + VERSION + '\nUsage: delegrix <install|status|uninstall> [--client all|codex|claude|cursor] [--global] [--force] [--dry-run]');
+    console.log('Delegrix v' + VERSION + '\nUsage: delegrix <install|update|status|uninstall> [--client all|codex|claude|cursor] [--global] [--force] [--dry-run]');
     return;
   }
   if (opts.action === 'version') { console.log(VERSION); return; }
   for (const [dest, clients] of targets(opts)) {
     const label = clients.join('+');
     if (opts.action === 'status') {
-      console.log((validOwner(dest) ? 'installed ' : 'missing   ') + label + ': ' + dest);
+      const managed = validOwner(dest);
+      console.log((managed ? 'installed v' + installedVersion(dest) : 'missing') + ' ' + label + ': ' + dest);
+      continue;
+    }
+    if (opts.action === 'update') {
+      if (!existsSync(dest)) {
+        console.error('not installed ' + label + ': ' + dest + ' (use install first)');
+        process.exitCode = 1;
+        continue;
+      }
+      if (!validOwner(dest)) throw new Error('refuse to update unmanaged skill: ' + dest);
+      const changes = sourceChanges(dest);
+      if (changes.length === 0) {
+        console.log('up to date  ' + label + ': ' + dest + ' (v' + VERSION + ')');
+        continue;
+      }
+      console.log((opts.dryRun ? 'would update ' : 'update     ') + label + ': ' + dest +
+        ' (' + changes.length + ' managed file(s); v' + installedVersion(dest) + ' -> v' + VERSION + ')');
+      if (!opts.dryRun) cpSync(SOURCE, dest, {recursive:true, force:true});
       continue;
     }
     if (opts.action === 'install') {

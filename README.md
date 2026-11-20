@@ -109,6 +109,31 @@ npx --yes github:GendByteMaster/Delegrix#v0.1.0 install --client codex --global
 
 After optional npm publication: `npx @gendbytemaster/delegrix install --client codex --global`.
 
+## Updating Delegrix
+
+Use the `update` command to refresh an **existing** Delegrix Skill from the source package currently invoked:
+
+```powershell
+# Latest repository default branch (after the PR is merged):
+npx --yes github:GendByteMaster/Delegrix update --client codex --global
+
+# Preview file changes without writing:
+npx --yes github:GendByteMaster/Delegrix update --client codex --global --dry-run
+
+# Verify the installed Skill version:
+npx --yes github:GendByteMaster/Delegrix status --client codex --global
+```
+
+Before the initial PR is merged, use its actual feature branch source:
+
+```powershell
+npx --yes "github:GendByteMaster/Delegrix#feature/initial-delegrix-skill" update --client codex --global
+```
+
+`update` verifies that the installation belongs to Delegrix, compares shipped files, refreshes changed managed files and leaves unrelated files in the Skill directory untouched. It refuses missing or unmanaged installations (use `install` for first-time setup), and refuses symbolic-link traversal. `--dry-run` previews the operation. Restart the coding-agent session after updating.
+
+**Source semantics:** the CLI does not poll GitHub or self-upgrade a permanently installed npm executable. To fetch newer source, invoke `npx --yes github:GendByteMaster/Delegrix ...`, optionally pinning a branch/tag. Using `delegrix update` with a globally installed CLI only reapplies the version already packaged with that CLI. Updates may overwrite user edits to shipped Skill files; keep custom policy in the repository's own instructions, not inside managed Skill files.
+
 ## Release process
 
 Before merging PR, verify Python checks, Node CLI tests, Windows/Linux GitHub Actions and real authorized Codex subagent handoff behavior. On `main`, run **Create GitHub Release** (Actions → workflow_dispatch) with `v0.1.0`; it validates the artifact and publishes the tag and GitHub Release. Because releases created with the GitHub Actions token do not automatically trigger other GitHub Actions workflows, run **Publish npm** manually with the published tag if you want registry publication. This requires `NPM_TOKEN` to be configured. [Release notes](docs/releases/v0.1.0.md).
