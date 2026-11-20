@@ -23,6 +23,21 @@ class PackageContract(unittest.TestCase):
         self.assertIn("analysis-only", integration)
         self.assertIn("unverified declaration", integration)
 
+    def test_default_auto_activation_and_task_goal_contract(self):
+        skill = (SKILL / 'SKILL.md').read_text(encoding='utf-8')
+        guide = (SKILL / 'references' / 'integration-workflows.md').read_text(encoding='utf-8')
+        goal = (SKILL / 'assets' / 'task-goal.md').read_text(encoding='utf-8')
+        for token in ('ForgeGuard first', 'ForgeScope', 'Goal', 'host-activated',
+                      'instructions-loaded', 'unavailable'):
+            self.assertIn(token, skill + guide)
+        self.assertLess(skill.index('**ForgeGuard first**'), skill.index('**Create or reuse a Goal'))
+        self.assertLess(skill.index('**Create or reuse a Goal'), skill.index('**ForgeScope next**'))
+        for token in ('Outcome:', 'Target:', 'Success criteria:', 'Evidence:',
+                      'In scope:', 'Out of scope:', 'Stop / escalate:'):
+            self.assertIn(token, goal)
+        self.assertIn('Never create a separate task', goal)
+        self.assertIn('does not grant permission', goal)
+
     def test_bundled_preflight_example(self):
         import json
         spec = importlib.util.spec_from_file_location("delegrix_example_check", SKILL / "scripts" / "check_plan.py")

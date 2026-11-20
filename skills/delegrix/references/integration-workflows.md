@@ -1,21 +1,35 @@
-# Optional integration workflows
+# Automatic companion activation and Goal workflow
 
-Use this page only when ForgeGuard or ForgeScope is installed and the current task makes that integration useful. The skills interact through **the primary agent's instructions**, not through APIs, imports, background processes or delegated permission grants. Delegrix remains usable on its own.
+Read on EVERY Delegrix invocation. Automatically attempt ForgeGuard and ForgeScope when installed; only the scope and depth of their work depends on the task. Native host Skill invocation is preferred. If unavailable, load installed Skill instructions instead, and report the distinction. Do not make up tool calls.
+
+## Mandatory activation order
+
+1. Read current-task approval, AGENTS.md and host capabilities. No Skill selection or Goal grants permission to spawn subagents.
+2. ForgeGuard: activate the installed `engineering-guardrails` Skill through host-native invocation; else load and apply `engineering-guardrails/SKILL.md` and relevant policies. Record `host-activated`, `instructions-loaded` or `unavailable`.
+3. Goal: create or reuse a measurable task-local Goal using ForgeGuard Goal Intelligence where available and [the goal template](../assets/task-goal.md). It is attached to this task, NEVER a separate task, chat, thread, worktree or worker. For trivial tasks a concise contract suffices; only use a persistent goal API when one really exists and is appropriate.
+4. ForgeScope: activate the installed `forgescope` Skill using host-native selection; else load and apply its installed `SKILL.md` and relevant review rules. Record the actual mode. Select targeted review for coding tasks, analysis-only when requested, and full audit ONLY when justified. Do not mutate its ledger without review need.
+5. Delegrix: decide meaningful delegation under existing permissions, build worker contracts, dispatch via host, verify handoffs, and reconcile Goal success and review findings.
+6. Report companion activation and Goal completion evidence honestly.
+
+## Installed Skill detection
+
+ The skills interact through **the primary agent's instructions**, not through APIs, imports, background processes or delegated permission grants. Delegrix remains usable on its own.
 
 ## Detect without side effects
 
 1. Read applicable project instructions and the current user's authorization. Do not treat installing or invoking any Skill as permission to spawn workers.
-2. Check for ForgeGuard's installed `engineering-guardrails/SKILL.md` under supported agent-skill directories. If present, read its installed version's authorization, delegation-intelligence, risk and verification references **as applicable**. Do not rely solely on the version used while designing Delegrix.
-3. If a repository audit is requested, check for `forgescope/SKILL.md` and its `references/subagents.md`. Its review mode (especially analysis-only), evidence requirements and workspace ownership remain authoritative for that review.
+2. Check for the installed `engineering-guardrails/SKILL.md` under supported agent-skill directories. Activate through the host if supported; otherwise read its installed Goal Intelligence, authorization, delegation, risk and verification policies. Do not rely solely on the version used while designing Delegrix.
+3. On each Delegrix invocation, look for `forgescope/SKILL.md` and activate or load it when installed. Its review mode (especially analysis-only), evidence requirements and workspace ownership remain authoritative for that review.
 4. Do not modify `AGENTS.md`, ForgeGuard-managed Codex configuration, or `.forgescope/REVIEW.md` as a consequence of detecting either Skill.
-5. If neither is installed, apply Delegrix's bounded-worker policy and repository instructions without claiming either integration was used.
+5. If either Skill is absent, mark its activation mode `unavailable`; disclose degraded integration and continue only when permitted by the user's scope and binding policies.
 
 ## Who owns which decision
 
 | Decision or state | Primary authority |
 | --- | --- |
 | Whether delegation is permitted | User's current, scoped authorization + host platform; ForgeGuard policy when active |
-| Goal and risk gate | ForgeGuard, when active |
+| Goal Intelligence and risk gate | ForgeGuard when active; task-local Goal contract otherwise |
+| Goal ownership and success evidence | Primary agent, within current task |
 | Whether delegation is useful | ForgeGuard Delegation Intelligence, when active; Delegrix otherwise |
 | Audit scope, finding severity and review evidence | ForgeScope, when active for a review |
 | Worker assignment, dependency waves and write ownership | Delegrix, subject to all above constraints |
@@ -26,10 +40,10 @@ Use this page only when ForgeGuard or ForgeScope is installed and the current ta
 
 | Active Skills | Expected behavior |
 | --- | --- |
-| Delegrix only | Explicit approval and host capability first; bounded, evidence-backed independent assignments |
-| Delegrix + ForgeGuard | Reuse ForgeGuard authorization/delegation/risk/verification decisions; Delegrix builds and checks concrete worker contracts |
-| Delegrix + ForgeScope | ForgeScope selects review depth and evidence standards; Delegrix partitions authorized investigative scopes, preferably read-only |
-| All three | ForgeGuard gates actions; ForgeScope owns the review and any ledger; Delegrix owns dispatch briefs, isolation and handoffs; primary agent synthesizes and verifies |
+| Delegrix only | Attempt both companions, mark unavailable, create local Goal, respect authorization and host capability |
+| Delegrix + ForgeGuard | Auto-load ForgeGuard, create/reuse Goal, honor its policies and report ForgeScope missing |
+| Delegrix + ForgeScope | Auto-load ForgeScope, create task-local Goal, select scoped review and report ForgeGuard missing |
+| All three | Auto-activate ForgeGuard, establish Goal, auto-activate ForgeScope; Delegrix owns worker contracts; primary agent integrates and verifies |
 
 ## Delegation procedure
 

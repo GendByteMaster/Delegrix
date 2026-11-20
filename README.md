@@ -13,9 +13,9 @@ Delegrix is a portable, instruction-only **Agent Skill** for bounded AI subagent
 - **Delegrix**: the concrete delegated-work contract, worker ownership, dispatch waves, structured handoffs, and integration checks.
 - **Project `AGENTS.md`**: local instructions and any stricter team-size, security or verification rules. Repository instructions never themselves authorize subagent spawning.
 
-Both integrations are optional. Delegrix works without either Skill, using a conservative delegated-work flow and the host's actual capabilities.
+**Automatic startup:** when invoked, Delegrix proactively activates installed ForgeGuard first, defines/reuses a measurable Goal in the CURRENT task, then activates installed ForgeScope for proportionate review. If no host-native Skill invocation exists, it loads installed Skill instructions rather than inventing process execution. Both installations remain optional for portability, but their activation is attempted by default and missing integrations are reported.
 
-See [integration workflows](skills/delegrix/references/integration-workflows.md) for behavior with ForgeGuard alone, ForgeScope alone, both together, or neither. These are **instruction-level integrations**: no hidden API calls, dependency on their CLI installers, or automatic modification of their state.
+See [Goal contract](skills/delegrix/assets/task-goal.md) and [integration workflows](skills/delegrix/references/integration-workflows.md) for behavior with ForgeGuard alone, ForgeScope alone, both together, or neither. These are **instruction-level integrations**: no hidden API calls, dependency on their CLI installers, or automatic modification of their state.
 
 ## Install
 
@@ -44,6 +44,7 @@ skills/delegrix/
 ├── agents/openai.yaml
 ├── assets/
 │   ├── worker-brief.md
+│   ├── task-goal.md
 │   ├── handoff.md
 │   └── preflight-example.json
 ├── references/

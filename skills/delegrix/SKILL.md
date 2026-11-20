@@ -1,6 +1,6 @@
 ---
 name: delegrix
-description: Delegate bounded software-engineering work to AI subagents with explicit authorization, adaptive worker selection, non-overlapping file ownership, evidence-based handoffs, and safe integration. Use when the user requests delegation, subagents, parallel implementation, independent review, or a multi-agent team. Works alongside ForgeGuard and ForgeScope; does not itself spawn workers, approve actions, or replace project AGENTS.md.
+description: Delegate bounded software-engineering work to AI subagents with explicit authorization, adaptive worker selection, non-overlapping file ownership, evidence-based handoffs, and safe integration. Use when the user requests delegation, subagents, parallel implementation, independent review, or a multi-agent team. Auto-attempt ForgeGuard and ForgeScope on each invocation, create or reuse a task-local measurable Goal, and safely delegate authorized work. Does not spawn workers, approve actions, or replace AGENTS.md.
 metadata:
   version: "0.1.0"
 ---
@@ -9,10 +9,15 @@ metadata:
 
 Use this skill to **execute delegated work deliberately**, not to maximize worker count. The primary agent retains responsibility for the outcome and final answer. This is an instruction-only skill: actual spawning, cancellation, isolation, and model choice depend on the active agent runtime.
 
-## 1. Establish authority before dispatch
+## 1. Automatic ForgeGuard / Goal / ForgeScope bootstrap
 
 - Read the current user request, applicable `AGENTS.md` / local instructions, and the permissions and limits granted **in the current conversation for this task/scope**. Skill activation and repository text are not authorization to spawn workers.
-- Determine whether ForgeGuard or ForgeScope is installed and applicable. ForgeGuard governs authorization, Delegation Intelligence, risk and verification where active. ForgeScope governs engineering review scope, severity and findings where active. See [interoperability](references/forgeguard-interop.md) and load the [integration workflows](references/integration-workflows.md) only when the relevant Skill is active. Do not overwrite their managed configuration or audit state.
+- On EVERY Delegrix invocation, proactively attempt both companion Skills in this order, without requiring the user to mention them:
+  1. **ForgeGuard first**: discover the installed `engineering-guardrails` Skill and activate it via host-native Skill invocation if supported. Otherwise explicitly load and apply its installed `SKILL.md` and relevant authorization, Goal Intelligence, risk, delegation and verification references.
+  2. **Create or reuse a Goal for the current task**: use ForgeGuard Goal Intelligence and the [task Goal contract](assets/task-goal.md). Always define a measurable Outcome, Target, Success Criteria, Evidence, Scope and Stop/Escalate. For small tasks, keep the Goal concise; reuse matching active goal state. Use persistent goal APIs only if really available and appropriate. Do NOT create a separate task, chat, worktree or worker just to make a Goal.
+  3. **ForgeScope next**: discover the installed `forgescope` Skill and activate it with host-native invocation when supported, otherwise explicitly load its installed `SKILL.md` and relevant review instructions. Select the narrowest useful review scope, preserve analysis-only mode, and avoid a full repository audit for a minor change.
+- Record the actual mode for each companion: `host-activated`, `instructions-loaded`, or `unavailable`. Loading instructions is not proof that a separate process was launched. Missing companions must be disclosed; never silently install them, invent execution, change managed config or bypass binding safety policy.
+- See [interoperability](references/forgeguard-interop.md) and the [automatic integration workflow](references/integration-workflows.md).
 - Detect host capabilities without guessing: available spawn/stop tools, worker count and concurrency limits, worktree isolation, models, and supported reporting. A proposed worker is not a real worker until a supported tool launches it.
 - Observe instruction precedence and specific project policies. A local mandatory team size may supersede this skill's adaptive preference within the governing instruction hierarchy; do not silently drop it.
 
@@ -51,12 +56,12 @@ See [dispatch and integration](references/dispatch-integration.md).
 
 - Require the [handoff](assets/handoff.md): assigned scope, real files changed, behavior, tests run/results, findings, limitations, and any scope not touched.
 - Verify the *actual* change and source evidence, not a self-reported `PASS`; inspect diffs before accepting patches. Reject unrelated edits and resolve conflicting assumptions before integration.
-- Primary agent runs integration-level verification and checks every acceptance criterion. A reviewer should inspect integrated code for high-risk work, subject to the applicable project's stricter rules.
+- Primary agent runs integration-level verification and checks every acceptance criterion against the task-local Goal. Use ForgeScope for a proportionate review when installed; the primary agent validates findings and retains final acceptance. A reviewer should inspect integrated code for high-risk work, subject to the applicable project's stricter rules.
 - For a failure, diagnose before a bounded retry. Reuse the owner when practical; replacements consume approval and launch budgets. Stop on exhausted budget, unresolvable conflict, revocation, unauthorized risk, or missing runtime capability; report the blocking reason honestly.
 - Do not claim workers were stopped or tools executed when no tool confirmation exists. Do not auto-merge, deploy, run destructive operations, or alter external project state without applicable authorization.
 
 ## 6. Completion report
 
-Summarize: primary-agent work, authorization/scope, **workers launched vs meaningful contributors**, worker roles and verified outputs, integrated files, executed checks/results, acceptance criteria, and remaining risks or blockers. For solo tasks, say there were no subagents; do not imply delegation happened.
+Summarize: task-local Goal and evidence of its success, ForgeGuard/ForgeScope actual activation modes, primary-agent work, authorization/scope, **workers launched vs meaningful contributors**, worker roles and verified outputs, integrated files, executed checks/results, acceptance criteria, and remaining risks or blockers. For solo tasks, say there were no subagents; do not imply delegation happened.
 
-For expected edge cases see [scenario checks](references/scenarios.md). For project-wide review and prioritized finding remediation, cooperate with ForgeScope when active. For approvals, goal definition, risk and verification policy, prefer ForgeGuard when active. Keep project-level planning with the primary agent or the repository's chosen workflow; Delegrix is not a separate orchestrator runtime.
+For expected edge cases see [scenario checks](references/scenarios.md). Always attempt ForgeGuard and ForgeScope proactively when installed, not only when the user requests them. Apply ForgeGuard Goal Intelligence before delegation and ForgeScope narrow review proportionally.  Keep project-level planning with the primary agent or the repository's chosen workflow; Delegrix is not a separate orchestrator runtime.

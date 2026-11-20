@@ -1,18 +1,19 @@
 # ForgeGuard and ForgeScope interoperability
 
-Delegrix is a delegation-execution *skill*, not a replacement for either tool or a standalone subagent runtime. Load only the installed policies relevant to the current task; do not assume all installations are the same version.
+Delegrix is a delegation-execution *skill*, not a replacement for either tool or a standalone subagent runtime. Automatically attempt BOTH installed companion Skills on every Delegrix invocation: ForgeGuard first, task-local Goal second, ForgeScope third. Use host-native Skill activation when supported or load installed instructions and report that mode. Load only relevant policy/review detail and do not assume installation versions.
 
 | Responsibility | Owner |
 | --- | --- |
 | Explicit scope-specific approval | User and host; ForgeGuard policy when applicable |
-| Goal measurability, risk classification, high-impact approval | ForgeGuard when active |
+| Goal Intelligence and risk classification | ForgeGuard when active |
+| Task-local Goal definition, reuse and completion | Primary agent using ForgeGuard Goal Intelligence; never a new task or worker |
 | Whether delegation is worthwhile | ForgeGuard Delegation Intelligence when active, otherwise Delegrix's conservative decision rubric |
 | Review domains, finding severity, audit workspace, review synthesis | ForgeScope when active |
 | Scoped worker brief, ownership isolation, dispatch waves, structured handoff | Delegrix |
 | Runtime model/tool selection, actual spawn/stop/worktrees | Host agent runtime only |
 | Overall plan, integration, final acceptance | Primary agent subject to project instructions |
 
-See [optional integration workflows](integration-workflows.md) for an activation matrix, preflight procedure, read-only audit constraints, and failure handling.
+See [automatic integration workflows](integration-workflows.md) for an activation matrix, preflight procedure, read-only audit constraints, and failure handling.
 
 ## ForgeGuard
 
