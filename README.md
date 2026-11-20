@@ -15,6 +15,8 @@ Delegrix is a portable, instruction-only **Agent Skill** for bounded AI subagent
 
 Both integrations are optional. Delegrix works without either Skill, using a conservative delegated-work flow and the host's actual capabilities.
 
+See [integration workflows](skills/delegrix/references/integration-workflows.md) for behavior with ForgeGuard alone, ForgeScope alone, both together, or neither. These are **instruction-level integrations**: no hidden API calls, dependency on their CLI installers, or automatic modification of their state.
+
 ## Install
 
 For Codex, copy the `skills/delegrix/` directory to one of:
@@ -42,23 +44,45 @@ skills/delegrix/
 ├── agents/openai.yaml
 ├── assets/
 │   ├── worker-brief.md
-│   └── handoff.md
+│   ├── handoff.md
+│   └── preflight-example.json
 ├── references/
+│   ├── integration-workflows.md
 │   ├── decision.md
 │   ├── dispatch-integration.md
 │   ├── forgeguard-interop.md
 │   ├── scenarios.md
 │   └── worker-contract.md
-└── scripts/validate.py
+└── scripts/
+    ├── validate.py
+    └── check_plan.py
+tests/
+├── fixtures/preflight_cases.json
+├── test_preflight.py
+└── test_packaging.py
+.github/workflows/ci.yml
 ```
 
-## Validation
+## Validation and CI
 
-```
+Run the offline checks (Python standard library only):
+
+```bash
 python skills/delegrix/scripts/validate.py
+python -m unittest discover -s tests -p "test_*.py" -v
 ```
 
-This static validator checks package metadata, local references and basic policies. It **does not** exercise actual subagent spawning, cancellation, or integration behavior; runtime smoke tests must be done with a supported host and explicit approval.
+GitHub Actions runs these checks on Linux and Windows with Python 3.11 and 3.13 for pushes and pull requests. The tests cover static skill packaging and **20+ deterministic preflight scenarios**: worker authorization declarations, overlapping writes, dependency cycles, project and runtime caps, replacement budgets, and ForgeScope read-only mode.
+
+Optionally validate a proposed worker plan before delegating:
+
+```bash
+python skills/delegrix/scripts/check_plan.py skills/delegrix/assets/preflight-example.json
+```
+
+The JSON flag `authorization.explicit` is only an *assertion* written in the plan: the primary agent must still verify live, scope-specific permission in the current conversation. A passing preflight checks structure, not worker behavior or actual consent. See the [interoperability guide](skills/delegrix/references/integration-workflows.md) for ForgeGuard and ForgeScope rules.
+
+**These tests do not exercise actual subagent spawning, cancellation, approval handling, or multi-agent integration.** Real Codex/runtime smoke testing remains a separate acceptance gate.
 
 ## Status
 

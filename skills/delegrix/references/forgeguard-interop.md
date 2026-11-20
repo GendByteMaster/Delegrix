@@ -12,6 +12,8 @@ Delegrix is a delegation-execution *skill*, not a replacement for either tool or
 | Runtime model/tool selection, actual spawn/stop/worktrees | Host agent runtime only |
 | Overall plan, integration, final acceptance | Primary agent subject to project instructions |
 
+See [optional integration workflows](integration-workflows.md) for an activation matrix, preflight procedure, read-only audit constraints, and failure handling.
+
 ## ForgeGuard
 
 ForgeGuard v1.6.1 uses explicit current-conversation authorization, treats approval as permission rather than mandatory delegation, and defaults to delegation depth 1. Read and preserve the installed version's applicable `engineering-guardrails/SKILL.md`, `subagent-policy.md`, `delegation-intelligence.md`, `risk-gate.md` and `verification-policy.md`; do not recreate its gates in Delegrix or modify its managed runtime settings.

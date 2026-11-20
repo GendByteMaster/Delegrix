@@ -1,5 +1,7 @@
 # Manual scenario acceptance checks
 
+The structural subset is executable in `tests/fixtures/preflight_cases.json` through `tests/test_preflight.py`. **Those tests cannot verify real LLM choices, permissions, or actual tool execution.** The scenarios below still require live host-runtime evaluation for end-to-end claims.
+
 Use these as prompts for evaluation in a capable runtime. A package/static validation does not prove actual worker execution.
 
 | Scenario | Expected behavior |

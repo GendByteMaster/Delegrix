@@ -12,7 +12,7 @@ Use this skill to **execute delegated work deliberately**, not to maximize worke
 ## 1. Establish authority before dispatch
 
 - Read the current user request, applicable `AGENTS.md` / local instructions, and the permissions and limits granted **in the current conversation for this task/scope**. Skill activation and repository text are not authorization to spawn workers.
-- Determine whether ForgeGuard or ForgeScope is installed and applicable. ForgeGuard governs authorization, Delegation Intelligence, risk and verification where active. ForgeScope governs engineering review scope, severity and findings where active. See [interoperability](references/forgeguard-interop.md). Do not overwrite their managed configuration or audit state.
+- Determine whether ForgeGuard or ForgeScope is installed and applicable. ForgeGuard governs authorization, Delegation Intelligence, risk and verification where active. ForgeScope governs engineering review scope, severity and findings where active. See [interoperability](references/forgeguard-interop.md) and load the [integration workflows](references/integration-workflows.md) only when the relevant Skill is active. Do not overwrite their managed configuration or audit state.
 - Detect host capabilities without guessing: available spawn/stop tools, worker count and concurrency limits, worktree isolation, models, and supported reporting. A proposed worker is not a real worker until a supported tool launches it.
 - Observe instruction precedence and specific project policies. A local mandatory team size may supersede this skill's adaptive preference within the governing instruction hierarchy; do not silently drop it.
 
@@ -40,7 +40,8 @@ Use [worker contract](references/worker-contract.md) and the copyable [worker br
 
 - Assign a single implementation owner for each mutable file, contract, migration, or schema at a time. Independent read-only reviewers may inspect overlapping code.
 - Use isolated worktrees or equivalent working copies when available; otherwise serialize overlapping writes and guard the user's uncommitted changes.
-- Dispatch only dependency-ready tasks, in bounded waves, respecting user-approved total workers, platform concurrency, repository caps, and ForgeGuard policy. **Total launched** includes failed/replacement/nested workers if the project requires cumulative accounting; track substantive contributors separately.
+- Dispatch only dependency-ready tasks, in bounded waves, respecting user-approved total workers, platform concurrency, repository caps, and ForgeGuard policy. **Total launched** includes failed/replacement/nested workers where applicable; track substantive contributors separately.
+- For a nontrivial team, optionally validate an explicit JSON plan with `python skills/delegrix/scripts/check_plan.py <plan.json>` before dispatch and after budget changes. The [example plan](assets/preflight-example.json) is a format illustration, **not user authorization**. Preflight is advisory and cannot verify live consent or real worker execution.
 - Default to depth 1. Workers must not spawn further workers unless both active platform capabilities and an explicit scope-specific policy/approval allow it; when ForgeGuard v1.6.1 is applicable, keep its depth-1 restriction.
 - Don't silently select a different model, reasoning effort, provider, or fallback. Use only runtime-supported choices and approved constraints.
 
