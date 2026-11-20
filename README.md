@@ -24,7 +24,7 @@ For Codex, copy the `skills/delegrix/` directory to one of:
 - User-wide: `$HOME/.agents/skills/delegrix/`
 - Repository-local: `<repo>/.agents/skills/delegrix/`
 
-Verify `SKILL.md` exists at the resulting path, restart the agent session if needed, then invoke **`$delegrix`** in a compatible client. It can also be selected implicitly when the host supports Skill selection. This repository does not ship an installer or assume a specific client runtime.
+Verify `SKILL.md` exists at the resulting path, restart the agent session if needed, then invoke **`$delegrix`** in a compatible client. It can also be selected implicitly when the host supports Skill selection. The repository also ships a portable CLI installer. Installing it does not configure a runtime or grant subagent authorization.
 
 ## Example
 
@@ -89,3 +89,25 @@ The JSON flag `authorization.explicit` is only an *assertion* written in the pla
 - **v0.1.0**: Initial portable Skill and scoped worker templates.
 - Compatibility intent: Codex and Agent Skills-capable hosts; exact features depend on host support.
 - No production or multi-agent runtime acceptance is claimed yet.
+## ForgeGuard-style CLI installation
+
+Install from GitHub (no npm registry publication needed):
+
+```bash
+npx --yes github:GendByteMaster/Delegrix install --client codex --global
+npx --yes github:GendByteMaster/Delegrix status --client codex --global
+```
+
+For a project install, omit `--global`. To use Claude Code or Cursor, select `--client claude` or `--client cursor`. `--client all` installs all clients, deduplicating shared project paths. `--dry-run` previews changes, `--force` refreshes managed files, and `uninstall` removes Delegrix files while leaving unrelated files alone. The CLI does not manage Codex subagent runtime configuration, approvals or ForgeGuard/ForgeScope workspaces.
+
+After the tagged release, install reproducibly:
+
+```bash
+npx --yes github:GendByteMaster/Delegrix#v0.1.0 install --client codex --global
+```
+
+After optional npm publication: `npx @gendbytemaster/delegrix install --client codex --global`.
+
+## Release process
+
+Before merging PR, verify Python checks, Node CLI tests, Windows/Linux GitHub Actions and real authorized Codex subagent handoff behavior. On `main`, run **Create GitHub Release** (Actions → workflow_dispatch) with `v0.1.0`; it validates the artifact and publishes the tag and GitHub Release. Because releases created with the GitHub Actions token do not automatically trigger other GitHub Actions workflows, run **Publish npm** manually with the published tag if you want registry publication. This requires `NPM_TOKEN` to be configured. [Release notes](docs/releases/v0.1.0.md).
