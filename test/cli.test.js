@@ -1,7 +1,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { spawnSync } from 'node:child_process';
-import { mkdtempSync, existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
+import { mkdtempSync, existsSync, mkdirSync, readFileSync, writeFileSync, symlinkSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -57,4 +57,16 @@ test('argument validation and version',()=>{
  assert.equal(run(dir,'install','--client').code,1);
  assert.equal(run(dir,'unknown').code,1);
  assert.match(run(dir,'--version').output,/0\.1\.0/);
+});
+
+test('refuse nested symlink paths when refreshing or uninstalling', {skip: process.platform === 'win32'}, ()=>{
+ const dir=fixture();
+ assert.equal(run(dir,'install','--client','codex').code,0);
+ const dest=join(dir,'.agents','skills','delegrix');
+ const external=fixture();
+ const link=join(dest,'unmanaged-link');
+ symlinkSync(external, link, 'dir');
+ assert.equal(run(dir,'install','--client','codex','--force').code,1);
+ assert.equal(run(dir,'uninstall','--client','codex').code,1);
+ assert.ok(existsSync(link));
 });

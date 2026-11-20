@@ -44,9 +44,18 @@ function targets(opts) {
   return out;
 }
 
+function assertNoSymlinks(path) {
+  if (!existsSync(path)) return;
+  const entry = lstatSync(path);
+  if (entry.isSymbolicLink()) throw new Error('refuse symbolic-link path: ' + path);
+  if (entry.isDirectory()) {
+    for (const name of readdirSync(path)) assertNoSymlinks(join(path, name));
+  }
+}
+
 function validOwner(dest) {
   if (!existsSync(dest)) return false;
-  if (lstatSync(dest).isSymbolicLink()) throw new Error('refuse symbolic-link target: ' + dest);
+  assertNoSymlinks(dest);
   const skill = join(dest, 'SKILL.md');
   return existsSync(skill) && /^name:\s*delegrix\s*$/m.test(readFileSync(skill, 'utf8'));
 }
