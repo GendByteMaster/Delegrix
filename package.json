@@ -1,0 +1,45 @@
+{
+  "name": "@gendbytemaster/delegrix",
+  "version": "0.1.0",
+  "description": "Portable Agent Skill for safe, scoped AI subagent delegation",
+  "license": "MIT",
+  "type": "module",
+  "bin": {
+    "delegrix": "bin/delegrix.js"
+  },
+  "scripts": {
+    "test": "node --test",
+    "check": "node --check bin/delegrix.js",
+    "prepublishOnly": "npm run check && npm test"
+  },
+  "files": [
+    "bin/",
+    "skills/delegrix/",
+    "README.md",
+    "LICENSE"
+  ],
+  "engines": {
+    "node": ">=18"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/GendByteMaster/Delegrix.git"
+  },
+  "bugs": {
+    "url": "https://github.com/GendByteMaster/Delegrix/issues"
+  },
+  "homepage": "https://github.com/GendByteMaster/Delegrix#readme",
+  "keywords": [
+    "agent-skills",
+    "subagents",
+    "delegation",
+    "codex",
+    "claude-code",
+    "cursor",
+    "forgeguard",
+    "forgescope"
+  ],
+  "publishConfig": {
+    "access": "public"
+  }
+}

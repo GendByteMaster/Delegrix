@@ -1,0 +1,466 @@
+[
+  {
+    "name": "no worker required and no approval",
+    "plan": {
+      "schema_version": 1,
+      "workers": []
+    },
+    "expect": []
+  },
+  {
+    "name": "one scoped worker",
+    "plan": {
+      "schema_version": 1,
+      "authorization": {
+        "explicit": true,
+        "max_workers": 2
+      },
+      "workers": [
+        {
+          "id": "implementer",
+          "mode": "write",
+          "write_paths": [
+            "src/api.py"
+          ]
+        }
+      ]
+    },
+    "expect": []
+  },
+  {
+    "name": "no current conversation authorization",
+    "plan": {
+      "schema_version": 1,
+      "workers": [
+        {
+          "id": "worker",
+          "mode": "read"
+        }
+      ]
+    },
+    "expect": [
+      "NO_DECLARED_APPROVAL"
+    ]
+  },
+  {
+    "name": "authorized maximum is a ceiling",
+    "plan": {
+      "schema_version": 1,
+      "authorization": {
+        "explicit": true,
+        "max_workers": 1
+      },
+      "workers": [
+        {
+          "id": "one",
+          "mode": "read"
+        },
+        {
+          "id": "two",
+          "mode": "read"
+        }
+      ]
+    },
+    "expect": [
+      "AUTHORIZATION_LIMIT"
+    ]
+  },
+  {
+    "name": "project upper bound counts all planned launches",
+    "plan": {
+      "schema_version": 1,
+      "authorization": {
+        "explicit": true
+      },
+      "workers": [
+        {
+          "id": "one",
+          "mode": "read"
+        },
+        {
+          "id": "two",
+          "mode": "read"
+        }
+      ],
+      "project": {
+        "max_total_workers": 1
+      }
+    },
+    "expect": [
+      "PROJECT_LIMIT"
+    ]
+  },
+  {
+    "name": "runtime total worker bound",
+    "plan": {
+      "schema_version": 1,
+      "authorization": {
+        "explicit": true
+      },
+      "workers": [
+        {
+          "id": "one",
+          "mode": "read"
+        },
+        {
+          "id": "two",
+          "mode": "read"
+        }
+      ],
+      "runtime": {
+        "max_total_workers": 1
+      }
+    },
+    "expect": [
+      "RUNTIME_LIMIT"
+    ]
+  },
+  {
+    "name": "project minimum unmet",
+    "plan": {
+      "schema_version": 1,
+      "project": {
+        "min_meaningful_workers": 8
+      },
+      "workers": []
+    },
+    "expect": [
+      "MINIMUM_NOT_PLANNED"
+    ]
+  },
+  {
+    "name": "overlapping file and parent folder",
+    "plan": {
+      "schema_version": 1,
+      "authorization": {
+        "explicit": true
+      },
+      "workers": [
+        {
+          "id": "one",
+          "mode": "write",
+          "write_paths": [
+            "src"
+          ]
+        },
+        {
+          "id": "two",
+          "mode": "write",
+          "write_paths": [
+            "src/api.py"
+          ]
+        }
+      ]
+    },
+    "expect": [
+      "OVERLAPPING_WRITES"
+    ]
+  },
+  {
+    "name": "independent ownership",
+    "plan": {
+      "schema_version": 1,
+      "authorization": {
+        "explicit": true
+      },
+      "workers": [
+        {
+          "id": "one",
+          "mode": "write",
+          "write_paths": [
+            "src/api"
+          ]
+        },
+        {
+          "id": "two",
+          "mode": "write",
+          "write_paths": [
+            "src/ui"
+          ],
+          "depends_on": [
+            "one"
+          ]
+        }
+      ]
+    },
+    "expect": []
+  },
+  {
+    "name": "cycle in the worker graph",
+    "plan": {
+      "schema_version": 1,
+      "authorization": {
+        "explicit": true
+      },
+      "workers": [
+        {
+          "id": "one",
+          "mode": "read",
+          "depends_on": [
+            "two"
+          ]
+        },
+        {
+          "id": "two",
+          "mode": "read",
+          "depends_on": [
+            "one"
+          ]
+        }
+      ]
+    },
+    "expect": [
+      "DEPENDENCY_CYCLE"
+    ]
+  },
+  {
+    "name": "missing dependency",
+    "plan": {
+      "schema_version": 1,
+      "authorization": {
+        "explicit": true
+      },
+      "workers": [
+        {
+          "id": "one",
+          "mode": "read",
+          "depends_on": [
+            "missing"
+          ]
+        }
+      ]
+    },
+    "expect": [
+      "MISSING_DEPENDENCY"
+    ]
+  },
+  {
+    "name": "ForgeScope analysis only forbids writes",
+    "plan": {
+      "schema_version": 1,
+      "authorization": {
+        "explicit": true
+      },
+      "workers": [
+        {
+          "id": "reviewer",
+          "mode": "write",
+          "write_paths": [
+            "src"
+          ]
+        }
+      ],
+      "forgescope": {
+        "active": true,
+        "mode": "analysis-only"
+      }
+    },
+    "expect": [
+      "READ_ONLY_VIOLATION"
+    ]
+  },
+  {
+    "name": "ForgeScope read-only reviewer",
+    "plan": {
+      "schema_version": 1,
+      "authorization": {
+        "explicit": true
+      },
+      "workers": [
+        {
+          "id": "reviewer",
+          "mode": "read"
+        }
+      ],
+      "forgescope": {
+        "active": true,
+        "mode": "analysis-only"
+      }
+    },
+    "expect": []
+  },
+  {
+    "name": "depth two prohibited under conservative policy",
+    "plan": {
+      "schema_version": 1,
+      "authorization": {
+        "explicit": true
+      },
+      "workers": [
+        {
+          "id": "one",
+          "mode": "read",
+          "depth": 2
+        }
+      ]
+    },
+    "expect": [
+      "NESTED_DELEGATION"
+    ]
+  },
+  {
+    "name": "worker cannot spawn another worker",
+    "plan": {
+      "schema_version": 1,
+      "authorization": {
+        "explicit": true
+      },
+      "workers": [
+        {
+          "id": "one",
+          "mode": "read",
+          "may_delegate": true
+        }
+      ]
+    },
+    "expect": [
+      "NESTED_DELEGATION"
+    ]
+  },
+  {
+    "name": "path cannot escape repository",
+    "plan": {
+      "schema_version": 1,
+      "authorization": {
+        "explicit": true
+      },
+      "workers": [
+        {
+          "id": "one",
+          "mode": "write",
+          "write_paths": [
+            "../secrets.env"
+          ]
+        }
+      ]
+    },
+    "expect": [
+      "INVALID_SCOPE"
+    ]
+  },
+  {
+    "name": "duplicate worker identity",
+    "plan": {
+      "schema_version": 1,
+      "authorization": {
+        "explicit": true
+      },
+      "workers": [
+        {
+          "id": "dup",
+          "mode": "read"
+        },
+        {
+          "id": "dup",
+          "mode": "read"
+        }
+      ]
+    },
+    "expect": [
+      "DUPLICATE_WORKER"
+    ]
+  },
+  {
+    "name": "worker without write scope",
+    "plan": {
+      "schema_version": 1,
+      "authorization": {
+        "explicit": true
+      },
+      "workers": [
+        {
+          "id": "writer",
+          "mode": "write"
+        }
+      ]
+    },
+    "expect": [
+      "MISSING_WRITE_SCOPE"
+    ]
+  },
+  {
+    "name": "read worker granted write paths",
+    "plan": {
+      "schema_version": 1,
+      "authorization": {
+        "explicit": true
+      },
+      "workers": [
+        {
+          "id": "reader",
+          "mode": "read",
+          "write_paths": [
+            "src"
+          ]
+        }
+      ]
+    },
+    "expect": [
+      "READ_ONLY_VIOLATION"
+    ]
+  },
+  {
+    "name": "prior failed launches still consume authorization budget",
+    "plan": {
+      "schema_version": 1,
+      "authorization": {
+        "explicit": true,
+        "max_workers": 2
+      },
+      "workers": [
+        {
+          "id": "replacement",
+          "mode": "read"
+        }
+      ],
+      "launches_so_far": 2
+    },
+    "expect": [
+      "AUTHORIZATION_LIMIT"
+    ]
+  },
+  {
+    "name": "project total includes prior launches",
+    "plan": {
+      "schema_version": 1,
+      "authorization": {
+        "explicit": true
+      },
+      "workers": [
+        {
+          "id": "replacement",
+          "mode": "read"
+        }
+      ],
+      "project": {
+        "max_total_workers": 28
+      },
+      "launches_so_far": 28
+    },
+    "expect": [
+      "PROJECT_LIMIT"
+    ]
+  },
+  {
+    "name": "runtime budget includes prior launches",
+    "plan": {
+      "schema_version": 1,
+      "authorization": {
+        "explicit": true
+      },
+      "workers": [
+        {
+          "id": "replacement",
+          "mode": "read"
+        }
+      ],
+      "runtime": {
+        "max_total_workers": 6
+      },
+      "launches_so_far": 6
+    },
+    "expect": [
+      "RUNTIME_LIMIT"
+    ]
+  }
+]

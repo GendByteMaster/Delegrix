@@ -1,0 +1,32 @@
+{
+  "schema_version": 1,
+  "authorization": {
+    "explicit": true,
+    "max_workers": 2
+  },
+  "project": {
+    "max_total_workers": 8
+  },
+  "runtime": {
+    "max_total_workers": 8
+  },
+  "launches_so_far": 0,
+  "forgescope": {
+    "active": true,
+    "mode": "analysis-only"
+  },
+  "workers": [
+    {
+      "id": "security-review",
+      "mode": "read",
+      "depth": 1,
+      "depends_on": []
+    },
+    {
+      "id": "test-review",
+      "mode": "read",
+      "depth": 1,
+      "depends_on": []
+    }
+  ]
+}

@@ -1,0 +1,6 @@
+interface:
+  display_name: "Delegrix"
+  short_description: "Delegate scoped AI subagents, with ForgeGuard and ForgeScope support"
+  default_prompt: "Use $delegrix to decide whether authorized subagents add value, assign bounded non-overlapping work, and verify handoffs. Respect ForgeGuard and this repository's AGENTS.md."
+policy:
+  allow_implicit_invocation: true
