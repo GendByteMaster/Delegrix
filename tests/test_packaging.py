@@ -50,6 +50,27 @@ class PackageContract(unittest.TestCase):
                          "Apache-2.0"):
             self.assertIn(fragment, contract)
 
+    def test_goal_v2_guidance_ships_and_is_routed(self):
+        skill = (SKILL / "SKILL.md").read_text(encoding="utf-8")
+        architecture = (SKILL / "references" / "goal-architecture.md").read_text(encoding="utf-8")
+        definition = (SKILL / "references" / "goal-definition.md").read_text(encoding="utf-8")
+        lifecycle = (SKILL / "references" / "goal-lifecycle.md").read_text(encoding="utf-8")
+        evaluation = (SKILL / "references" / "goal-evaluation.md").read_text(encoding="utf-8")
+        template = (SKILL / "assets" / "task-goal.md").read_text(encoding="utf-8")
+        for name in ("goal-definition.md", "goal-lifecycle.md", "goal-evaluation.md"):
+            self.assertIn("references/" + name, skill)
+            self.assertIn(name, architecture)
+            self.assertIn("../references/" + name, template)
+        for fragment in ("explicit goal-backed work", "inspection error", "never blindly repeat creation",
+                         "materially conflicting", "not a second authority"):
+            self.assertIn(fragment, definition)
+        for fragment in ("pending:", "passed:", "failed:", "blocked:", "stale:",
+                         "invalidate affected previous evidence", "dirty worktree"):
+            self.assertIn(fragment, lifecycle)
+        for fragment in ("every mandatory criterion", "do not report completed",
+                         "native completion cannot be confirmed", "not a test result"):
+            self.assertIn(fragment, evaluation)
+
     def test_bundled_preflight_example(self):
         import json
         spec = importlib.util.spec_from_file_location("delegrix_example_check", SKILL / "scripts" / "check_plan.py")
