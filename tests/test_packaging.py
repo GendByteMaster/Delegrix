@@ -61,7 +61,7 @@ class PackageContract(unittest.TestCase):
             self.assertIn("references/" + name, skill)
             self.assertIn(name, architecture)
             self.assertIn("../references/" + name, template)
-        for fragment in ("explicit goal-backed intent", "inspection error", "never blindly repeat creation",
+        for fragment in ("Explicit goal-backed intent", "inspection error", "never blindly repeat creation",
                          "materially conflicting", "not a second authority"):
             self.assertIn(fragment, definition)
         for fragment in ("pending:", "passed:", "failed:", "blocked:", "stale:",
