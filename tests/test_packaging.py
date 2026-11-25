@@ -71,6 +71,17 @@ class PackageContract(unittest.TestCase):
                          "native completion cannot be confirmed", "not a test result"):
             self.assertIn(fragment, evaluation)
 
+    def test_goal_decomposition_routing(self):
+        skill = (SKILL / "SKILL.md").read_text(encoding="utf-8")
+        guide = (SKILL / "references" / "goal-decomposition.md").read_text(encoding="utf-8")
+        self.assertIn("references/goal-decomposition.md", skill)
+        self.assertIn("assets/goal-preflight-example.json", skill)
+        for fragment in ("never an independent authoritative goal", "dependency-ready waves",
+                         "schema version 1 remains supported", "not completion or permission"):
+            self.assertIn(fragment, guide)
+        for name in ("worker-brief.md", "handoff.md"):
+            self.assertIn("criterion IDs", (SKILL / "assets" / name).read_text(encoding="utf-8"))
+
     def test_bundled_preflight_example(self):
         import json
         spec = importlib.util.spec_from_file_location("delegrix_example_check", SKILL / "scripts" / "check_plan.py")
