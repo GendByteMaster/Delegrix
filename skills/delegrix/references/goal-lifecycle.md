@@ -42,4 +42,4 @@ Compare the current outcome, scope, criteria, assumptions, actual changes and pe
 - Unexpected edits, conflicting native goals, lost authorization or unresolved risk stop the affected work. Report the difference and choose an authorized correction or escalation.
 - If native state is lost or a mutation cannot be confirmed, disclose it, retain available supporting evidence and do not invent a state transition.
 
-Use the [evidence and evaluation contract](goal-evaluation.md) before any completion decision. Targeted recovery is permitted only within existing authorization and bounded retry rules.
+Use the [evidence and evaluation contract](goal-evaluation.md) before any completion decision. Targeted recovery is permitted only within existing authorization and [bounded retry rules](goal-recovery.md).
