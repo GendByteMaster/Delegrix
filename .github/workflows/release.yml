@@ -44,4 +44,10 @@ jobs:
             echo "Release already exists; refusing replacement"
             exit 1
           fi
+          # A pre-existing tag can make gh ignore --target. Require a fresh tag.
+          existing_tag=$(git ls-remote --tags origin "refs/tags/$TAG")
+          if [ -n "$existing_tag" ]; then
+            echo "Tag already exists; refusing to publish an unverified target"
+            exit 1
+          fi
           gh release create "$TAG" --target "$GITHUB_SHA" --title "Delegrix $TAG — Goal-Driven Agent Orchestration" --notes-file "docs/releases/${TAG}.md"
