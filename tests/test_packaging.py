@@ -97,6 +97,32 @@ class PackageContract(unittest.TestCase):
         self.assertLess(skill.index("**ForgeGuard first**"), skill.index("**Create or reuse a Goal"))
         self.assertLess(skill.index("**Create or reuse a Goal"), skill.index("**ForgeScope next**"))
 
+    def test_goal_recovery_contract(self):
+        guide = (ROOT / "skills/delegrix/references/goal-recovery.md").read_text(encoding="utf-8")
+        for fragment in (
+            "at most two repair attempts per episode and four across the current goal",
+            "does not reset the episode",
+            "a previous failure state recurs (oscillation)",
+            "revoked authorization",
+            "invalidate evidence affected by that change",
+            "do not label the implementer's self-review independent",
+            "leave that gate unmet",
+            "not live execution evidence",
+            "not a token budget",
+        ):
+            with self.subTest(fragment=fragment):
+                self.assertIn(fragment, guide)
+        for name in (
+            "SKILL.md",
+            "references/goal-lifecycle.md",
+            "references/goal-evaluation.md",
+            "references/goal-architecture.md",
+            "references/dispatch-integration.md",
+            "references/integration-workflows.md",
+        ):
+            with self.subTest(name=name):
+                self.assertIn("goal-recovery.md", (ROOT / "skills/delegrix" / name).read_text(encoding="utf-8"))
+
     def test_bundled_preflight_example(self):
         import json
         spec = importlib.util.spec_from_file_location("delegrix_example_check", SKILL / "scripts" / "check_plan.py")
