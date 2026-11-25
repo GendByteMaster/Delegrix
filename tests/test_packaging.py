@@ -38,6 +38,18 @@ class PackageContract(unittest.TestCase):
         self.assertIn('Never create a separate task', goal)
         self.assertIn('does not grant permission', goal)
 
+    def test_goal_architecture_contract_ships(self):
+        skill = (SKILL / "SKILL.md").read_text(encoding="utf-8")
+        contract = (SKILL / "references" / "goal-architecture.md").read_text(encoding="utf-8")
+        goal = (SKILL / "assets" / "task-goal.md").read_text(encoding="utf-8")
+        self.assertIn("references/goal-architecture.md", skill)
+        self.assertIn("../references/goal-architecture.md", goal)
+        for fragment in ("Compatible active native goal", "Conflicting active goal",
+                         "no usable native goal API", "ForgeGuard unavailable",
+                         "do not create native goal state", "one authoritative representation",
+                         "Apache-2.0"):
+            self.assertIn(fragment, contract)
+
     def test_bundled_preflight_example(self):
         import json
         spec = importlib.util.spec_from_file_location("delegrix_example_check", SKILL / "scripts" / "check_plan.py")
