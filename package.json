@@ -1,7 +1,7 @@
 {
   "name": "@gendbytemaster/delegrix",
-  "version": "0.1.0",
-  "description": "Portable Agent Skill for safe, scoped AI subagent delegation",
+  "version": "0.2.0",
+  "description": "Portable Agent Skill for goal-driven orchestration and safe, scoped AI delegation",
   "license": "MIT",
   "type": "module",
   "bin": {
@@ -37,7 +37,9 @@
     "claude-code",
     "cursor",
     "forgeguard",
-    "forgescope"
+    "forgescope",
+    "goal-intelligence",
+    "engsense"
   ],
   "publishConfig": {
     "access": "public"

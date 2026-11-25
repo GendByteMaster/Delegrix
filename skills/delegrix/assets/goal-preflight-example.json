@@ -1,0 +1,63 @@
+{
+  "schema_version": 2,
+  "authorization": {
+    "explicit": true,
+    "max_workers": 2
+  },
+  "project": {
+    "max_total_workers": 8
+  },
+  "runtime": {
+    "max_total_workers": 8
+  },
+  "launches_so_far": 0,
+  "goal": {
+    "criteria": [
+      {
+        "id": "C1",
+        "required": true
+      },
+      {
+        "id": "C2",
+        "required": true
+      },
+      {
+        "id": "C3",
+        "required": true
+      },
+      {
+        "id": "C4",
+        "required": false
+      }
+    ],
+    "coordinator_criteria": [
+      "C3"
+    ]
+  },
+  "workers": [
+    {
+      "id": "implementation",
+      "mode": "write",
+      "depth": 1,
+      "write_paths": [
+        "src/service.py"
+      ],
+      "depends_on": [],
+      "criterion_ids": [
+        "C1"
+      ]
+    },
+    {
+      "id": "review",
+      "mode": "read",
+      "depth": 1,
+      "depends_on": [
+        "implementation"
+      ],
+      "criterion_ids": [
+        "C1",
+        "C2"
+      ]
+    }
+  ]
+}

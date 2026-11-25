@@ -38,6 +38,103 @@ class PackageContract(unittest.TestCase):
         self.assertIn('Never create a separate task', goal)
         self.assertIn('does not grant permission', goal)
 
+    def test_goal_architecture_contract_ships(self):
+        skill = (SKILL / "SKILL.md").read_text(encoding="utf-8")
+        contract = (SKILL / "references" / "goal-architecture.md").read_text(encoding="utf-8")
+        goal = (SKILL / "assets" / "task-goal.md").read_text(encoding="utf-8")
+        self.assertIn("references/goal-architecture.md", skill)
+        self.assertIn("../references/goal-architecture.md", goal)
+        for fragment in ("Compatible active native goal", "Conflicting active goal",
+                         "no usable native goal API", "ForgeGuard unavailable",
+                         "do not create native goal state", "one authoritative representation",
+                         "Apache-2.0"):
+            self.assertIn(fragment, contract)
+
+    def test_goal_v2_guidance_ships_and_is_routed(self):
+        skill = (SKILL / "SKILL.md").read_text(encoding="utf-8")
+        architecture = (SKILL / "references" / "goal-architecture.md").read_text(encoding="utf-8")
+        definition = (SKILL / "references" / "goal-definition.md").read_text(encoding="utf-8")
+        lifecycle = (SKILL / "references" / "goal-lifecycle.md").read_text(encoding="utf-8")
+        evaluation = (SKILL / "references" / "goal-evaluation.md").read_text(encoding="utf-8")
+        template = (SKILL / "assets" / "task-goal.md").read_text(encoding="utf-8")
+        for name in ("goal-definition.md", "goal-lifecycle.md", "goal-evaluation.md"):
+            self.assertIn("references/" + name, skill)
+            self.assertIn(name, architecture)
+            self.assertIn("../references/" + name, template)
+        for fragment in ("Explicit goal-backed intent", "inspection error", "never blindly repeat creation",
+                         "materially conflicting", "not a second authority"):
+            self.assertIn(fragment, definition)
+        for fragment in ("pending:", "passed:", "failed:", "blocked:", "stale:",
+                         "invalidate affected previous evidence", "dirty worktree"):
+            self.assertIn(fragment, lifecycle)
+        for fragment in ("every mandatory criterion", "do not report completed",
+                         "native completion cannot be confirmed", "not a test result"):
+            self.assertIn(fragment, evaluation)
+
+    def test_goal_decomposition_routing(self):
+        skill = (SKILL / "SKILL.md").read_text(encoding="utf-8")
+        guide = (SKILL / "references" / "goal-decomposition.md").read_text(encoding="utf-8")
+        self.assertIn("references/goal-decomposition.md", skill)
+        self.assertIn("assets/goal-preflight-example.json", skill)
+        for fragment in ("never an independent authoritative goal", "dependency-ready waves",
+                         "schema version 1 remains supported", "not completion or permission"):
+            self.assertIn(fragment, guide)
+        for name in ("worker-brief.md", "handoff.md"):
+            self.assertIn("criterion IDs", (SKILL / "assets" / name).read_text(encoding="utf-8"))
+
+    def test_engsense_integration_is_conditional(self):
+        skill = (SKILL / "SKILL.md").read_text(encoding="utf-8")
+        guide = (SKILL / "references" / "engsense-interop.md").read_text(encoding="utf-8")
+        workflow = (SKILL / "references" / "integration-workflows.md").read_text(encoding="utf-8")
+        self.assertIn("references/engsense-interop.md", skill)
+        self.assertIn("engsense-interop.md", workflow)
+        for fragment in ("not-needed", "host-activated", "instructions-loaded",
+                         "unavailable", "Avoid recursive Skill invocation",
+                         "Never auto-install", "downgrade mandatory criteria",
+                         "research-gated source-specific lenses",
+                         "not proof of implementation"):
+            self.assertIn(fragment, guide)
+        self.assertLess(skill.index("**ForgeGuard first**"), skill.index("**Create or reuse a Goal"))
+        self.assertLess(skill.index("**Create or reuse a Goal"), skill.index("**ForgeScope next**"))
+
+    def test_goal_recovery_contract(self):
+        guide = (ROOT / "skills/delegrix/references/goal-recovery.md").read_text(encoding="utf-8")
+        for fragment in (
+            "at most two repair attempts per episode and four across the current goal",
+            "does not reset the episode",
+            "a previous failure state recurs (oscillation)",
+            "revoked authorization",
+            "invalidate evidence affected by that change",
+            "do not label the implementer's self-review independent",
+            "leave that gate unmet",
+            "not live execution evidence",
+            "not a token budget",
+        ):
+            with self.subTest(fragment=fragment):
+                self.assertIn(fragment, guide)
+        for name in (
+            "SKILL.md",
+            "references/goal-lifecycle.md",
+            "references/goal-evaluation.md",
+            "references/goal-architecture.md",
+            "references/dispatch-integration.md",
+            "references/integration-workflows.md",
+        ):
+            with self.subTest(name=name):
+                self.assertIn("goal-recovery.md", (ROOT / "skills/delegrix" / name).read_text(encoding="utf-8"))
+
+    def test_release_version_coherence(self):
+        import json
+        import re
+
+        version = json.loads((ROOT / "package.json").read_text(encoding="utf-8"))["version"]
+        source = (SKILL / "SKILL.md").read_text(encoding="utf-8")
+        cli = (ROOT / "bin/delegrix.js").read_text(encoding="utf-8")
+        self.assertRegex(version, r"^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)$")
+        self.assertRegex(source, rf"""(?m)^\s*version:\s*(['"]?){re.escape(version)}\1\s*$""")
+        self.assertRegex(cli, rf"""const VERSION = (['"]){re.escape(version)}\1;""")
+        self.assertTrue((ROOT / "docs" / "releases" / f"v{version}.md").is_file())
+
     def test_bundled_preflight_example(self):
         import json
         spec = importlib.util.spec_from_file_location("delegrix_example_check", SKILL / "scripts" / "check_plan.py")

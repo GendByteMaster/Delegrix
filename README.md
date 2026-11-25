@@ -2,20 +2,34 @@
 
 **Delegate intelligently. Execute safely. Verify everything.**
 
-Delegrix is a portable, instruction-only **Agent Skill** for bounded AI subagent delegation. It helps a primary coding agent choose useful independent work, prepare precise worker assignments, avoid overlapping edits, verify worker handoffs, and integrate changes safely.
+Delegrix is a portable, instruction-only **Agent Skill** for goal-driven agent orchestration and bounded AI subagent delegation. It helps a primary coding agent choose useful independent work, prepare precise worker assignments, avoid overlapping edits, verify worker handoffs, and integrate changes safely.
 
 > Delegrix does **not** provide a subagent runtime, launch permissions, model router, or background workers. Actual operations depend on the capabilities and approvals of the host agent.
 
 ## How it fits
 
-- **[ForgeGuard](https://github.com/GendByteMaster/ForgeGuard)**: engineering guardrails, user authorization, risk gates, goal definition, verification policy and delegation decision policy, when installed.
+- **[ForgeGuard](https://github.com/GendByteMaster/ForgeGuard)**: engineering guardrails, user authorization, risk gates, applicable goal policy, verification policy and delegation decision policy, when installed.
 - **[ForgeScope](https://github.com/GendByteMaster/ForgeScope)**: broad engineering reviews, issue prioritization and evidence-based findings; Delegrix can help partition authorized specialist review work.
-- **Delegrix**: the concrete delegated-work contract, worker ownership, dispatch waves, structured handoffs, and integration checks.
+- **[EngSense](https://github.com/GendByteMaster/EngSense)**: optional engineering judgment for material strategy, decomposition and repair decisions.
+- **Delegrix**: measurable goals, criterion-linked delegation, evidence tracking, bounded recovery, and integration checks.
 - **Project `AGENTS.md`**: local instructions and any stricter team-size, security or verification rules. Repository instructions never themselves authorize subagent spawning.
 
-**Automatic startup:** when invoked, Delegrix proactively activates installed ForgeGuard first, defines/reuses a measurable Goal in the CURRENT task, then activates installed ForgeScope for proportionate review. If no host-native Skill invocation exists, it loads installed Skill instructions rather than inventing process execution. Both installations remain optional for portability, but their activation is attempted by default and missing integrations are reported.
+**Automatic startup:** when invoked, Delegrix proactively activates installed ForgeGuard first, defines/reuses a measurable Goal in the CURRENT task, then activates installed ForgeScope for proportionate review. If no host-native Skill invocation exists, it loads installed Skill instructions rather than inventing process execution. ForgeGuard and ForgeScope remain optional and are attempted by default. EngSense is consulted conditionally; missing companions never grant permissions or satisfy mandatory gates.
 
 See [Goal contract](skills/delegrix/assets/task-goal.md) and [integration workflows](skills/delegrix/references/integration-workflows.md) for behavior with ForgeGuard alone, ForgeScope alone, both together, or neither. These are **instruction-level integrations**: no hidden API calls, dependency on their CLI installers, or automatic modification of their state.
+
+## Goal Intelligence v2
+
+Use a single logical goal within the current task. Native goal creation requires explicit goal-backed intent, confirmed absence of a compatible active goal and supported host tools. Routine work uses concise local criteria. No extra task, thread, goal database or automatic worker launch is required.
+
+- [Goal definition and routing](skills/delegrix/references/goal-definition.md)
+- [Lifecycle, evidence freshness and drift](skills/delegrix/references/goal-lifecycle.md)
+- [Criterion-linked decomposition](skills/delegrix/references/goal-decomposition.md)
+- [Evaluation and completion gate](skills/delegrix/references/goal-evaluation.md)
+- [EngSense integration](skills/delegrix/references/engsense-interop.md)
+- [Bounded recovery](skills/delegrix/references/goal-recovery.md)
+
+A worker contributes to criteria; the primary agent verifies the integrated result. All mandatory criteria and applicable review/approval gates must pass. Default repair limits are two attempts per episode and four per goal, with stricter policies taking precedence.
 
 ## Install
 
@@ -46,12 +60,20 @@ skills/delegrix/
 │   ├── worker-brief.md
 │   ├── task-goal.md
 │   ├── handoff.md
-│   └── preflight-example.json
+│   ├── preflight-example.json
+│   └── goal-preflight-example.json
 ├── references/
 │   ├── integration-workflows.md
 │   ├── decision.md
 │   ├── dispatch-integration.md
 │   ├── forgeguard-interop.md
+│   ├── engsense-interop.md
+│   ├── goal-architecture.md
+│   ├── goal-definition.md
+│   ├── goal-lifecycle.md
+│   ├── goal-decomposition.md
+│   ├── goal-evaluation.md
+│   ├── goal-recovery.md
 │   ├── scenarios.md
 │   └── worker-contract.md
 └── scripts/
@@ -79,7 +101,10 @@ Optionally validate a proposed worker plan before delegating:
 
 ```bash
 python skills/delegrix/scripts/check_plan.py skills/delegrix/assets/preflight-example.json
+python skills/delegrix/scripts/check_plan.py skills/delegrix/assets/goal-preflight-example.json
 ```
+
+Schema v1 remains supported. Schema v2 adds goal criterion coverage; it does not prove evidence or completion.
 
 The JSON flag `authorization.explicit` is only an *assertion* written in the plan: the primary agent must still verify live, scope-specific permission in the current conversation. A passing preflight checks structure, not worker behavior or actual consent. See the [interoperability guide](skills/delegrix/references/integration-workflows.md) for ForgeGuard and ForgeScope rules.
 
@@ -87,9 +112,10 @@ The JSON flag `authorization.explicit` is only an *assertion* written in the pla
 
 ## Status
 
-- **v0.1.0**: Initial portable Skill and scoped worker templates.
+- **v0.1.0**: previous released baseline.
+- **v0.2.0**: release with documented runtime limitations for [issue #2](https://github.com/GendByteMaster/Delegrix/issues/2); see [release notes](docs/releases/v0.2.0.md). Full runtime acceptance remains open.
 - Compatibility intent: Codex and Agent Skills-capable hosts; exact features depend on host support.
-- No production or multi-agent runtime acceptance is claimed yet.
+- The pre-promotion candidate passed automated CI and two user-reported Copilot smoke scenarios, including a controlled recovery and independent review. Codex, Claude Code, Cursor and negative recovery acceptance remain open. No general production-readiness claim is made.
 ## ForgeGuard-style CLI installation
 
 Install from GitHub (no npm registry publication needed):
@@ -101,13 +127,30 @@ npx --yes github:GendByteMaster/Delegrix status --client codex --global
 
 For a project install, omit `--global`. To use Claude Code or Cursor, select `--client claude` or `--client cursor`. `--client all` installs all clients, deduplicating shared project paths. `--dry-run` previews changes, `--force` refreshes managed files, and `uninstall` removes Delegrix files while leaving unrelated files alone. The CLI does not manage Codex subagent runtime configuration, approvals or ForgeGuard/ForgeScope workspaces.
 
-After the tagged release, install reproducibly:
+For the previous published baseline, install reproducibly:
 
 ```bash
 npx --yes github:GendByteMaster/Delegrix#v0.1.0 install --client codex --global
 ```
 
+For v0.2.0, after the tag is published, pin `github:GendByteMaster/Delegrix#v0.2.0` for reproducible installation.
+
 After optional npm publication: `npx @gendbytemaster/delegrix install --client codex --global`.
+
+## Git checkout installation (when npm rejects Git dependencies)
+
+If npm reports `EALLOWGIT`, leave its policy unchanged. Clone the candidate to a separate source directory and run the bundled CLI directly from the intended target project:
+
+```powershell
+$src = Join-Path $env:TEMP ("delegrix-src-" + [guid]::NewGuid().ToString("N"))
+git clone https://github.com/GendByteMaster/Delegrix.git $src
+# Review the checkout and record the source commit before installing.
+git -C $src rev-parse HEAD
+node "$src/bin/delegrix.js" install --client codex
+node "$src/bin/delegrix.js" status --client codex
+```
+
+For an existing managed project installation, use `node "$src/bin/delegrix.js" update --client codex --dry-run` and then `node "$src/bin/delegrix.js" update --client codex`. Add `--global` only for a deliberate user-wide installation or update. Pin a reviewed commit with `git -C $src checkout --detach <commit-sha>` when reproducibility matters.
 
 ## Updating Delegrix
 
@@ -124,10 +167,10 @@ npx --yes github:GendByteMaster/Delegrix update --client codex --global --dry-ru
 npx --yes github:GendByteMaster/Delegrix status --client codex --global
 ```
 
-Before the initial PR is merged, use its actual feature branch source:
+To update from the published v0.2.0 tag (once available):
 
 ```powershell
-npx --yes "github:GendByteMaster/Delegrix#feature/initial-delegrix-skill" update --client codex --global
+npx --yes "github:GendByteMaster/Delegrix#v0.2.0" update --client codex --global
 ```
 
 `update` verifies that the installation belongs to Delegrix, compares shipped files, refreshes changed managed files and leaves unrelated files in the Skill directory untouched. It refuses missing or unmanaged installations (use `install` for first-time setup), and refuses symbolic-link traversal. `--dry-run` previews the operation. Restart the coding-agent session after updating.
@@ -136,4 +179,4 @@ npx --yes "github:GendByteMaster/Delegrix#feature/initial-delegrix-skill" update
 
 ## Release process
 
-Before merging PR, verify Python checks, Node CLI tests, Windows/Linux GitHub Actions and real authorized Codex subagent handoff behavior. On `main`, run **Create GitHub Release** (Actions → workflow_dispatch) with `v0.1.0`; it validates the artifact and publishes the tag and GitHub Release. Because releases created with the GitHub Actions token do not automatically trigger other GitHub Actions workflows, run **Publish npm** manually with the published tag if you want registry publication. This requires `NPM_TOKEN` to be configured. [Release notes](docs/releases/v0.1.0.md).
+Before merging PR, verify Python checks, Node CLI tests and Windows/Linux GitHub Actions. Document outstanding runtime validation explicitly; release with unresolved runtime checks requires maintainer approval and must not claim full interoperability. On `main`, run **Create GitHub Release** (Actions → workflow_dispatch) with the tag matching approved package metadata and versioned release notes; it validates the artifact and publishes the tag and GitHub Release. Because releases created with the GitHub Actions token do not automatically trigger other GitHub Actions workflows, run **Publish npm** manually with the published tag if you want registry publication. This requires `NPM_TOKEN` to be configured. [v0.2.0 release notes](docs/releases/v0.2.0.md) · [v0.1.0 release notes](docs/releases/v0.1.0.md).

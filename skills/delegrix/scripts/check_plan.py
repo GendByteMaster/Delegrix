@@ -30,13 +30,75 @@ def _path(value: Any) -> str | None:
     if value.startswith("/") or ":" in value or "*" in value or "?" in value:
         return None
     parts = value.strip("/").split("/")
-    if not parts or any(part in ("", ".", "..") for part in parts):
+    if not parts or any(part in ("", ".", "..") or part.endswith((" ", ".")) for part in parts):
         return None
     return "/".join(parts)
 
 
 def _overlaps(left: str, right: str) -> bool:
+    # Conservative portable comparison: case-only differences can alias on Windows.
+    left, right = left.casefold(), right.casefold()
     return left == right or left.startswith(right + "/") or right.startswith(left + "/")
+
+
+def _goal_mapping(plan: dict, workers: list) -> list[str]:
+    """Validate v2 criterion coverage, not evidence, permissions or completion."""
+    errors: list[str] = []
+
+    def report(code: str) -> None:
+        if code not in errors:
+            errors.append(code)
+
+    goal = plan.get("goal")
+    if not isinstance(goal, dict):
+        return ["INVALID_GOAL"]
+    criteria = goal.get("criteria")
+    if not isinstance(criteria, list) or not criteria or len(criteria) > 128:
+        return ["INVALID_GOAL"]
+    declared: set[str] = set()
+    required: set[str] = set()
+    for criterion in criteria:
+        if not isinstance(criterion, dict):
+            report("INVALID_CRITERION")
+            continue
+        identifier = criterion.get("id")
+        if (not isinstance(identifier, str) or not IDENTIFIER.fullmatch(identifier)
+                or type(criterion.get("required")) is not bool):
+            report("INVALID_CRITERION")
+            continue
+        if identifier in declared:
+            report("DUPLICATE_CRITERION")
+        declared.add(identifier)
+        if criterion["required"]:
+            required.add(identifier)
+
+    covered: set[str] = set()
+
+    def mapping(values: Any, *, nonempty: bool) -> None:
+        if (not isinstance(values, list) or len(values) > 128
+                or (nonempty and not values)):
+            report("INVALID_CRITERION_MAPPING")
+            return
+        seen: set[str] = set()
+        for value in values:
+            if not isinstance(value, str) or not IDENTIFIER.fullmatch(value):
+                report("INVALID_CRITERION_MAPPING")
+                continue
+            if value in seen:
+                report("DUPLICATE_CRITERION_MAPPING")
+            seen.add(value)
+            if value not in declared:
+                report("UNKNOWN_CRITERION")
+            else:
+                covered.add(value)
+
+    mapping(goal.get("coordinator_criteria"), nonempty=False)
+    for worker in workers:
+        if isinstance(worker, dict):
+            mapping(worker.get("criterion_ids"), nonempty=True)
+    if required - covered:
+        report("UNCOVERED_REQUIRED_CRITERION")
+    return errors
 
 
 def evaluate(plan: Any) -> list[str]:
@@ -47,7 +109,7 @@ def evaluate(plan: Any) -> list[str]:
         if code not in errors:
             errors.append(code)
 
-    if not isinstance(plan, dict) or type(plan.get("schema_version")) is not int or plan["schema_version"] != 1:
+    if not isinstance(plan, dict) or type(plan.get("schema_version")) is not int or plan["schema_version"] not in (1, 2):
         return ["INVALID_SCHEMA"]
     workers = plan.get("workers")
     if not isinstance(workers, list) or len(workers) > 128:
@@ -108,7 +170,9 @@ def evaluate(plan: Any) -> list[str]:
         if identifier in ids:
             report("DUPLICATE_WORKER")
         ids.add(identifier)
-        if worker.get("depth", 1) != 1 or worker.get("may_delegate") is True:
+        depth = worker.get("depth", 1)
+        may_delegate = worker.get("may_delegate", False)
+        if type(depth) is not int or depth != 1 or type(may_delegate) is not bool or may_delegate:
             report("NESTED_DELEGATION")
         mode = worker.get("mode")
         if mode not in ("read", "write"):
@@ -165,6 +229,9 @@ def evaluate(plan: Any) -> list[str]:
         for other_owner, other_path in writes[i + 1 :]:
             if owner != other_owner and _overlaps(path, other_path):
                 report("OVERLAPPING_WRITES")
+    if plan["schema_version"] == 2:
+        for code in _goal_mapping(plan, workers):
+            report(code)
     return errors
 
 

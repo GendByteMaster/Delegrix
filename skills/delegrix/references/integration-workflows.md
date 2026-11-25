@@ -6,10 +6,11 @@ Read on EVERY Delegrix invocation. Automatically attempt ForgeGuard and ForgeSco
 
 1. Read current-task approval, AGENTS.md and host capabilities. No Skill selection or Goal grants permission to spawn subagents.
 2. ForgeGuard: activate the installed `engineering-guardrails` Skill through host-native invocation; else load and apply `engineering-guardrails/SKILL.md` and relevant policies. Record `host-activated`, `instructions-loaded` or `unavailable`.
-3. Goal: create or reuse a measurable task-local Goal using ForgeGuard Goal Intelligence where available and [the goal template](../assets/task-goal.md). It is attached to this task, NEVER a separate task, chat, thread, worktree or worker. For trivial tasks a concise contract suffices; only use a persistent goal API when one really exists and is appropriate.
+3. Goal: create or reuse a measurable task-local Goal using [goal definition and routing](goal-definition.md) and [the goal template](../assets/task-goal.md), honoring installed ForgeGuard policy. It is attached to this task, NEVER a separate task, chat, thread, worktree or worker. For trivial tasks use local criteria; create native goal state only for explicit goal-backed intent, confirmed absence and supported host capabilities. Reuse compatible native state.
 4. ForgeScope: activate the installed `forgescope` Skill using host-native selection; else load and apply its installed `SKILL.md` and relevant review rules. Record the actual mode. Select targeted review for coding tasks, analysis-only when requested, and full audit ONLY when justified. Do not mutate its ledger without review need.
-5. Delegrix: decide meaningful delegation under existing permissions, build worker contracts, dispatch via host, verify handoffs, and reconcile Goal success and review findings.
-6. Report companion activation and Goal completion evidence honestly.
+5. EngSense (conditional): consult the installed Skill only when material strategy, decomposition or recovery decisions warrant [engineering judgment](engsense-interop.md). Record actual mode or `not-needed`; preserve the preceding activation order.
+6. Delegrix: decide meaningful delegation under existing permissions, build worker contracts using [goal decomposition](goal-decomposition.md) for substantial work, dispatch via host, verify handoffs, and reconcile Goal success and review findings using [lifecycle](goal-lifecycle.md) and [evaluation](goal-evaluation.md) for substantial work. For failures apply [bounded recovery and revalidation](goal-recovery.md), including applicable independent review gates.
+7. Report companion activation and Goal completion evidence honestly.
 
 ## Installed Skill detection
 
@@ -28,7 +29,8 @@ Read on EVERY Delegrix invocation. Automatically attempt ForgeGuard and ForgeSco
 | Decision or state | Primary authority |
 | --- | --- |
 | Whether delegation is permitted | User's current, scoped authorization + host platform; ForgeGuard policy when active |
-| Goal Intelligence and risk gate | ForgeGuard when active; task-local Goal contract otherwise |
+| Goal guidance and risk gate | Delegrix [goal architecture](goal-architecture.md); installed ForgeGuard policy remains binding when active |
+| Contextual engineering judgment | EngSense when useful and available; primary agent accepts decisions within binding policy |
 | Goal ownership and success evidence | Primary agent, within current task |
 | Whether delegation is useful | ForgeGuard Delegation Intelligence, when active; Delegrix otherwise |
 | Audit scope, finding severity and review evidence | ForgeScope, when active for a review |
@@ -40,16 +42,18 @@ Read on EVERY Delegrix invocation. Automatically attempt ForgeGuard and ForgeSco
 
 | Active Skills | Expected behavior |
 | --- | --- |
-| Delegrix only | Attempt both companions, mark unavailable, create local Goal, respect authorization and host capability |
+| Delegrix only | Attempt both companions, mark unavailable, define/reuse the Goal according to native/local routing, respect authorization and host capability |
 | Delegrix + ForgeGuard | Auto-load ForgeGuard, create/reuse Goal, honor its policies and report ForgeScope missing |
-| Delegrix + ForgeScope | Auto-load ForgeScope, create task-local Goal, select scoped review and report ForgeGuard missing |
+| Delegrix + ForgeScope | Establish/reuse Goal before loading ForgeScope, select scoped review and report ForgeGuard missing |
 | All three | Auto-activate ForgeGuard, establish Goal, auto-activate ForgeScope; Delegrix owns worker contracts; primary agent integrates and verifies |
+
+EngSense is an independent optional axis: each row above works with EngSense consulted when needed, or without it. See [EngSense integration](engsense-interop.md) for discovery and fallback.
 
 ## Delegation procedure
 
 1. **Authorize and classify:** establish live-chat scope, applicable repository min/max and platform caps. If ForgeGuard is active, use its current delegation and Risk Gate policies. Authorization is permission, not a compulsory headcount unless a binding project rule explicitly sets one.
 2. **Partition:** for a ForgeScope audit, partition by real subsystem or risk domain, request confirmed evidence with file/symbol references, and avoid overlapping implementation writes. Do not make speculative findings confirmed merely because a worker reported them.
-3. **Preflight (optional):** prepare a temporary, deliberately non-secret JSON plan using [the example](../assets/preflight-example.json). Run `python skills/delegrix/scripts/check_plan.py path/to/plan.json`. Its `authorization.explicit` field is an **unverified declaration**, not an approval token. It cannot validate actual live user consent, worker competence, runtime capacities, or successful review. Resolve issues before dispatch and recheck on retries.
+3. **Preflight (optional):** prepare a temporary, deliberately non-secret JSON plan using [the v1 example](../assets/preflight-example.json) or [the v2 goal-linked example](../assets/goal-preflight-example.json). Run `python skills/delegrix/scripts/check_plan.py path/to/plan.json`. Its `authorization.explicit` field is an **unverified declaration**, not an approval token. It cannot validate actual live user consent, worker competence, runtime capacities, or successful review. Resolve issues before dispatch and recheck on retries.
 4. **Dispatch only through the host:** use capability-supported spawn/worktree/cancel methods and respect the total **launched** budget (including failed/replacement attempts), actual concurrency, depth and permissions.
 5. **Handoff and verify:** apply the worker contract and handoff template, inspect real changes, make one primary-agent integration decision, and run relevant checks. ForgeScope retains control of `.forgescope/REVIEW.md` if it is active; ForgeGuard retains high-risk/critical approval rules.
 6. **Report precisely:** distinguish planned, launched, meaningful, failed and replacement workers. Record whether validation was static, offline, CI, or live smoke testing. Do not report a passing preflight as proof of actual multi-agent execution.
@@ -64,4 +68,4 @@ Read on EVERY Delegrix invocation. Automatically attempt ForgeGuard and ForgeSco
 
 ## Limits of the integration
 
-This integration is **composable agent guidance**, not RPC or a live API bridge to ForgeGuard or ForgeScope. Neither project currently exposes a verified Delegrix-specific execution endpoint here. The optional preflight validator is a deterministic structural check only. Verify agent behavior with a real host runtime before claiming end-to-end interoperability.
+This integration is **composable agent guidance**, not RPC or a live API bridge to ForgeGuard, EngSense or ForgeScope. No companion execution endpoint is assumed. The optional preflight validator is a deterministic structural check only. Verify agent behavior with a real host runtime before claiming end-to-end interoperability.
