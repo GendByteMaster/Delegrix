@@ -23,7 +23,7 @@ A static check can prove static structure but not live behavior. CI results appl
 Before reporting completion:
 1. Confirm current user intent, scope and applicable risk/approval gates.
 2. Inspect integrated changes and re-evaluate evidence freshness and relevant dependencies.
-3. Require every mandatory criterion to be passed with sufficient current evidence. Optional criteria may remain unmet and must be disclosed when relevant. No required criteria may be dropped silently.
+3. Require every mandatory criterion to be passed with sufficient current evidence. Optional criteria may remain unmet and must be disclosed when relevant. No required criteria may be dropped silently. Confirmed material findings affecting mandatory criteria and required independent/specialist review remain completion gates; a passing test cannot substitute for those gates.
 4. If any mandatory criterion is failed, stale, pending or blocked, do not report completed. Choose [bounded repair](goal-recovery.md) when authorized and useful, otherwise report blocked or incomplete with exact remaining conditions.
 5. Primary agent owns the final decision. If native completion is supported and authorized, follow the actual host tool contract only after the gate passes; confirm the result. If native completion cannot be confirmed, distinguish the local assessment from native status.
 
