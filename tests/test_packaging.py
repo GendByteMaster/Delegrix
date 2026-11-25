@@ -82,6 +82,21 @@ class PackageContract(unittest.TestCase):
         for name in ("worker-brief.md", "handoff.md"):
             self.assertIn("criterion IDs", (SKILL / "assets" / name).read_text(encoding="utf-8"))
 
+    def test_engsense_integration_is_conditional(self):
+        skill = (SKILL / "SKILL.md").read_text(encoding="utf-8")
+        guide = (SKILL / "references" / "engsense-interop.md").read_text(encoding="utf-8")
+        workflow = (SKILL / "references" / "integration-workflows.md").read_text(encoding="utf-8")
+        self.assertIn("references/engsense-interop.md", skill)
+        self.assertIn("engsense-interop.md", workflow)
+        for fragment in ("not-needed", "host-activated", "instructions-loaded",
+                         "unavailable", "Avoid recursive Skill invocation",
+                         "Never auto-install", "downgrade mandatory criteria",
+                         "research-gated source-specific lenses",
+                         "not proof of implementation"):
+            self.assertIn(fragment, guide)
+        self.assertLess(skill.index("**ForgeGuard first**"), skill.index("**Create or reuse a Goal"))
+        self.assertLess(skill.index("**Create or reuse a Goal"), skill.index("**ForgeScope next**"))
+
     def test_bundled_preflight_example(self):
         import json
         spec = importlib.util.spec_from_file_location("delegrix_example_check", SKILL / "scripts" / "check_plan.py")
