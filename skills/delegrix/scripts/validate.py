@@ -14,6 +14,7 @@ SKILL = ROOT / "SKILL.md"
 
 def main() -> int:
     errors = []
+    version = None
     source = SKILL.read_text(encoding="utf-8")
     match = re.match(r"\A---\n([\s\S]*?)\n---\n", source)
     if not match:
@@ -27,8 +28,11 @@ def main() -> int:
         ds = re.search(r"^description:\s*(.+)$", frontmatter, re.M)
         if not ds or not (1 <= len(ds.group(1)) <= 1024):
             errors.append("description required, 1–1024 chars")
-        if not re.search(r"^\s*version:\s*['\"]?0\.1\.0", frontmatter, re.M):
-            errors.append("expected skill version 0.1.0")
+        vm = re.search(r"""^\s*version:\s*(['"]?)(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)\1\s*$""", frontmatter, re.M)
+        if vm:
+            version = ".".join(vm.group(i) for i in (2, 3, 4))
+        else:
+            errors.append("expected exact numeric skill version")
     for relative in re.findall(r"\]\(([^)#]+)(?:#[^)]*)?\)", source):
         if "://" not in relative and not (ROOT / relative).is_file():
             errors.append(f"missing SKILL.md reference {relative}")
@@ -67,7 +71,7 @@ def main() -> int:
         for error in errors:
             print(" -", error)
         return 1
-    print(f"PASS: {ROOT.name} v0.1.0; {len(list(ROOT.rglob('*')))} entries; {len(source.splitlines())} SKILL.md lines")
+    print(f"PASS: {ROOT.name} v{version}; {len(list(ROOT.rglob('*')))} entries; {len(source.splitlines())} SKILL.md lines")
     return 0
 
 
