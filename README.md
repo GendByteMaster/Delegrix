@@ -113,7 +113,7 @@ The JSON flag `authorization.explicit` is only an *assertion* written in the pla
 ## Status
 
 - **v0.1.0**: previous released baseline.
-- **v0.2.0**: versioned release candidate (not yet published) for [issue #2](https://github.com/GendByteMaster/Delegrix/issues/2); see [draft release notes](docs/releases/v0.2.0.md). Full acceptance and publication are pending.
+- **v0.2.0**: release with documented runtime limitations for [issue #2](https://github.com/GendByteMaster/Delegrix/issues/2); see [release notes](docs/releases/v0.2.0.md). Full runtime acceptance remains open.
 - Compatibility intent: Codex and Agent Skills-capable hosts; exact features depend on host support.
 - The pre-promotion candidate passed automated CI and two user-reported Copilot smoke scenarios, including a controlled recovery and independent review. Codex, Claude Code, Cursor and negative recovery acceptance remain open. No general production-readiness claim is made.
 ## ForgeGuard-style CLI installation
@@ -133,7 +133,7 @@ For the previous published baseline, install reproducibly:
 npx --yes github:GendByteMaster/Delegrix#v0.1.0 install --client codex --global
 ```
 
-For v0.2.0, use the feature branch until the versioned tag is actually published.
+For v0.2.0, after the tag is published, pin `github:GendByteMaster/Delegrix#v0.2.0` for reproducible installation.
 
 After optional npm publication: `npx @gendbytemaster/delegrix install --client codex --global`.
 
@@ -143,7 +143,7 @@ If npm reports `EALLOWGIT`, leave its policy unchanged. Clone the candidate to a
 
 ```powershell
 $src = Join-Path $env:TEMP ("delegrix-src-" + [guid]::NewGuid().ToString("N"))
-git clone --branch feature/goal-intelligence-v2 https://github.com/GendByteMaster/Delegrix.git $src
+git clone https://github.com/GendByteMaster/Delegrix.git $src
 # Review the checkout and record the source commit before installing.
 git -C $src rev-parse HEAD
 node "$src/bin/delegrix.js" install --client codex
@@ -167,10 +167,10 @@ npx --yes github:GendByteMaster/Delegrix update --client codex --global --dry-ru
 npx --yes github:GendByteMaster/Delegrix status --client codex --global
 ```
 
-To evaluate this development candidate before merge, use the actual feature branch source:
+To update from the published v0.2.0 tag (once available):
 
 ```powershell
-npx --yes "github:GendByteMaster/Delegrix#feature/goal-intelligence-v2" update --client codex --global
+npx --yes "github:GendByteMaster/Delegrix#v0.2.0" update --client codex --global
 ```
 
 `update` verifies that the installation belongs to Delegrix, compares shipped files, refreshes changed managed files and leaves unrelated files in the Skill directory untouched. It refuses missing or unmanaged installations (use `install` for first-time setup), and refuses symbolic-link traversal. `--dry-run` previews the operation. Restart the coding-agent session after updating.
@@ -179,4 +179,4 @@ npx --yes "github:GendByteMaster/Delegrix#feature/goal-intelligence-v2" update -
 
 ## Release process
 
-Before merging PR, verify Python checks, Node CLI tests, Windows/Linux GitHub Actions and real authorized Codex subagent handoff behavior. On `main`, run **Create GitHub Release** (Actions → workflow_dispatch) with the tag matching approved package metadata and versioned release notes; it validates the artifact and publishes the tag and GitHub Release. Because releases created with the GitHub Actions token do not automatically trigger other GitHub Actions workflows, run **Publish npm** manually with the published tag if you want registry publication. This requires `NPM_TOKEN` to be configured. [v0.2.0 draft release notes](docs/releases/v0.2.0.md) · [v0.1.0 release notes](docs/releases/v0.1.0.md).
+Before merging PR, verify Python checks, Node CLI tests and Windows/Linux GitHub Actions. Document outstanding runtime validation explicitly; release with unresolved runtime checks requires maintainer approval and must not claim full interoperability. On `main`, run **Create GitHub Release** (Actions → workflow_dispatch) with the tag matching approved package metadata and versioned release notes; it validates the artifact and publishes the tag and GitHub Release. Because releases created with the GitHub Actions token do not automatically trigger other GitHub Actions workflows, run **Publish npm** manually with the published tag if you want registry publication. This requires `NPM_TOKEN` to be configured. [v0.2.0 release notes](docs/releases/v0.2.0.md) · [v0.1.0 release notes](docs/releases/v0.1.0.md).
