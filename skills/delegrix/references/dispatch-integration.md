@@ -29,6 +29,8 @@ For each handoff:
 
 ## Failure handling
 
+Apply [bounded goal recovery](goal-recovery.md) for failed, stale or blocked mandatory criteria and material review findings. Track repair attempts separately from launches, stop on no progress or exhausted limits, and revalidate affected integrated evidence.
+
 - Worker unavailable: continue solo where possible; report mandatory delegation gate if unmet.
 - Scope conflict: suspend overlapping writers; agree one owner and ordered merge.
 - Incorrect output: return concise defect/reproduction to the owner; avoid duplicate full restarts.
