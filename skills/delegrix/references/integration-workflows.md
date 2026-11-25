@@ -6,9 +6,9 @@ Read on EVERY Delegrix invocation. Automatically attempt ForgeGuard and ForgeSco
 
 1. Read current-task approval, AGENTS.md and host capabilities. No Skill selection or Goal grants permission to spawn subagents.
 2. ForgeGuard: activate the installed `engineering-guardrails` Skill through host-native invocation; else load and apply `engineering-guardrails/SKILL.md` and relevant policies. Record `host-activated`, `instructions-loaded` or `unavailable`.
-3. Goal: create or reuse a measurable task-local Goal using ForgeGuard Goal Intelligence where available and [the goal template](../assets/task-goal.md). It is attached to this task, NEVER a separate task, chat, thread, worktree or worker. For trivial tasks a concise contract suffices; only use a persistent goal API when one really exists and is appropriate.
+3. Goal: create or reuse a measurable task-local Goal using [goal definition and routing](goal-definition.md) and [the goal template](../assets/task-goal.md), honoring installed ForgeGuard policy. It is attached to this task, NEVER a separate task, chat, thread, worktree or worker. For trivial tasks use local criteria; create native goal state only for explicit goal-backed intent, confirmed absence and supported host capabilities. Reuse compatible native state.
 4. ForgeScope: activate the installed `forgescope` Skill using host-native selection; else load and apply its installed `SKILL.md` and relevant review rules. Record the actual mode. Select targeted review for coding tasks, analysis-only when requested, and full audit ONLY when justified. Do not mutate its ledger without review need.
-5. Delegrix: decide meaningful delegation under existing permissions, build worker contracts, dispatch via host, verify handoffs, and reconcile Goal success and review findings.
+5. Delegrix: decide meaningful delegation under existing permissions, build worker contracts, dispatch via host, verify handoffs, and reconcile Goal success and review findings using [lifecycle](goal-lifecycle.md) and [evaluation](goal-evaluation.md) for substantial work.
 6. Report companion activation and Goal completion evidence honestly.
 
 ## Installed Skill detection
