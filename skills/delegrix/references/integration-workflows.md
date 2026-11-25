@@ -42,9 +42,9 @@ Read on EVERY Delegrix invocation. Automatically attempt ForgeGuard and ForgeSco
 
 | Active Skills | Expected behavior |
 | --- | --- |
-| Delegrix only | Attempt both companions, mark unavailable, create local Goal, respect authorization and host capability |
+| Delegrix only | Attempt both companions, mark unavailable, define/reuse the Goal according to native/local routing, respect authorization and host capability |
 | Delegrix + ForgeGuard | Auto-load ForgeGuard, create/reuse Goal, honor its policies and report ForgeScope missing |
-| Delegrix + ForgeScope | Auto-load ForgeScope, create task-local Goal, select scoped review and report ForgeGuard missing |
+| Delegrix + ForgeScope | Establish/reuse Goal before loading ForgeScope, select scoped review and report ForgeGuard missing |
 | All three | Auto-activate ForgeGuard, establish Goal, auto-activate ForgeScope; Delegrix owns worker contracts; primary agent integrates and verifies |
 
 EngSense is an independent optional axis: each row above works with EngSense consulted when needed, or without it. See [EngSense integration](engsense-interop.md) for discovery and fallback.
@@ -68,4 +68,4 @@ EngSense is an independent optional axis: each row above works with EngSense con
 
 ## Limits of the integration
 
-This integration is **composable agent guidance**, not RPC or a live API bridge to ForgeGuard or ForgeScope. Neither project currently exposes a verified Delegrix-specific execution endpoint here. The optional preflight validator is a deterministic structural check only. Verify agent behavior with a real host runtime before claiming end-to-end interoperability.
+This integration is **composable agent guidance**, not RPC or a live API bridge to ForgeGuard, EngSense or ForgeScope. No companion execution endpoint is assumed. The optional preflight validator is a deterministic structural check only. Verify agent behavior with a real host runtime before claiming end-to-end interoperability.
