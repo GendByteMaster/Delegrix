@@ -121,8 +121,8 @@ The JSON flag `authorization.explicit` is only an *assertion* written in the pla
 Install from GitHub (no npm registry publication needed):
 
 ```bash
-npx --yes github:GendByteMaster/Delegrix install --client codex --global
-npx --yes github:GendByteMaster/Delegrix status --client codex --global
+npx --yes --allow-git=all github:GendByteMaster/Delegrix install --client codex --global
+npx --yes --allow-git=all github:GendByteMaster/Delegrix status --client codex --global
 ```
 
 For a project install, omit `--global`. To use Claude Code or Cursor, select `--client claude` or `--client cursor`. `--client all` installs all clients, deduplicating shared project paths. `--dry-run` previews changes, `--force` refreshes managed files, and `uninstall` removes Delegrix files while leaving unrelated files alone. The CLI does not manage Codex subagent runtime configuration, approvals or ForgeGuard/ForgeScope workspaces.
@@ -130,7 +130,7 @@ For a project install, omit `--global`. To use Claude Code or Cursor, select `--
 For the previous published baseline, install reproducibly:
 
 ```bash
-npx --yes github:GendByteMaster/Delegrix#v0.1.0 install --client codex --global
+npx --yes --allow-git=all github:GendByteMaster/Delegrix#v0.1.0 install --client codex --global
 ```
 
 For v0.2.0, after the tag is published, pin `github:GendByteMaster/Delegrix#v0.2.0` for reproducible installation.
@@ -158,25 +158,53 @@ Use the `update` command to refresh an **existing** Delegrix Skill from the sour
 
 ```powershell
 # Latest repository default branch (after the PR is merged):
-npx --yes github:GendByteMaster/Delegrix update --client codex --global
+npx --yes --allow-git=all github:GendByteMaster/Delegrix update --client codex --global
 
 # Preview file changes without writing:
-npx --yes github:GendByteMaster/Delegrix update --client codex --global --dry-run
+npx --yes --allow-git=all github:GendByteMaster/Delegrix update --client codex --global --dry-run
 
 # Verify the installed Skill version:
-npx --yes github:GendByteMaster/Delegrix status --client codex --global
+npx --yes --allow-git=all github:GendByteMaster/Delegrix status --client codex --global
 ```
 
 To update from the published v0.2.0 tag (once available):
 
 ```powershell
-npx --yes "github:GendByteMaster/Delegrix#v0.2.0" update --client codex --global
+npx --yes --allow-git=all "github:GendByteMaster/Delegrix#v0.2.0" update --client codex --global
 ```
 
 `update` verifies that the installation belongs to Delegrix, compares shipped files, refreshes changed managed files and leaves unrelated files in the Skill directory untouched. It refuses missing or unmanaged installations (use `install` for first-time setup), and refuses symbolic-link traversal. `--dry-run` previews the operation. Restart the coding-agent session after updating.
 
-**Source semantics:** the CLI does not poll GitHub or self-upgrade a permanently installed npm executable. To fetch newer source, invoke `npx --yes github:GendByteMaster/Delegrix ...`, optionally pinning a branch/tag. Using `delegrix update` with a globally installed CLI only reapplies the version already packaged with that CLI. Updates may overwrite user edits to shipped Skill files; keep custom policy in the repository's own instructions, not inside managed Skill files.
+**Source semantics:** the CLI does not poll GitHub or self-upgrade a permanently installed npm executable. To fetch newer source, invoke `npx --yes --allow-git=all github:GendByteMaster/Delegrix ...`, optionally pinning a branch/tag. Using `delegrix update` with a globally installed CLI only reapplies the version already packaged with that CLI. Updates may overwrite user edits to shipped Skill files; keep custom policy in the repository's own instructions, not inside managed Skill files.
 
 ## Release process
 
 Before merging PR, verify Python checks, Node CLI tests and Windows/Linux GitHub Actions. Document outstanding runtime validation explicitly; release with unresolved runtime checks requires maintainer approval and must not claim full interoperability. On `main`, run **Create GitHub Release** (Actions → workflow_dispatch) with the tag matching approved package metadata and versioned release notes; it validates the artifact and publishes the tag and GitHub Release. Because releases created with the GitHub Actions token do not automatically trigger other GitHub Actions workflows, run **Publish npm** manually with the published tag if you want registry publication. This requires `NPM_TOKEN` to be configured. [v0.2.0 release notes](docs/releases/v0.2.0.md) · [v0.1.0 release notes](docs/releases/v0.1.0.md).
+
+## npm 12 compatibility (EALLOWGIT)
+
+npm 12 denies Git-sourced packages by default. The examples use `--allow-git=all` before the package argument to opt in for one invocation only, without changing persistent configuration. It permits all Git dependencies in that invocation; use only trusted, reviewed sources. On older npm versions that do not recognize this option, omit it if Git fetching is permitted. See [npm configuration](https://docs.npmjs.com/cli/using-npm/config/#allow-git).
+
+```bash
+# Install
+npx --yes --allow-git=all github:GendByteMaster/Delegrix#v0.2.0 install --client codex --global
+# Upgrade existing installation
+npx --yes --allow-git=all github:GendByteMaster/Delegrix#v0.2.0 update --client codex --global
+# Verify installed Skill
+npx --yes --allow-git=all github:GendByteMaster/Delegrix#v0.2.0 status --client codex --global
+```
+
+Use update only for existing managed installations. Omit `--global` for project scope; restart the agent after updating.
+
+If Git fetching is prohibited, use Git and Node.js directly (from the intended target project, with a separate source checkout):
+
+```powershell
+$src = Join-Path $env:TEMP ("delegrix-" + [guid]::NewGuid().ToString("N"))
+git clone --branch v0.2.0 --depth 1 https://github.com/GendByteMaster/Delegrix.git $src
+node "$src/bin/delegrix.js" install --client codex --global
+# For an existing installation, use instead:
+# node "$src/bin/delegrix.js" update --client codex --global
+node "$src/bin/delegrix.js" status --client codex --global
+```
+
+The npm 12 option follows npm's documented configuration; live npm 12 execution is not yet verified here.
