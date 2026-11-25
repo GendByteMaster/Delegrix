@@ -5,8 +5,8 @@ Delegrix is a delegation-execution *skill*, not a replacement for either tool or
 | Responsibility | Owner |
 | --- | --- |
 | Explicit scope-specific approval | User and host; ForgeGuard policy when applicable |
-| Goal Intelligence and risk classification | ForgeGuard when active |
-| Task-local Goal definition, reuse and completion | Primary agent using ForgeGuard Goal Intelligence; never a new task or worker |
+| Applicable goal policy and risk classification | ForgeGuard when active |
+| Task-local Goal definition, reuse and completion | Primary agent following Delegrix's [goal architecture](goal-architecture.md) and installed ForgeGuard policy; never a new task or worker |
 | Whether delegation is worthwhile | ForgeGuard Delegation Intelligence when active, otherwise Delegrix's conservative decision rubric |
 | Review domains, finding severity, audit workspace, review synthesis | ForgeScope when active |
 | Scoped worker brief, ownership isolation, dispatch waves, structured handoff | Delegrix |
