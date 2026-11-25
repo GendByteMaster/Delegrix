@@ -1,13 +1,13 @@
 ---
 name: delegrix
-description: Delegate bounded software-engineering work to AI subagents with explicit authorization, adaptive worker selection, non-overlapping file ownership, evidence-based handoffs, and safe integration. Use when the user requests delegation, subagents, parallel implementation, independent review, or a multi-agent team. Auto-attempt ForgeGuard and ForgeScope on each invocation, consult EngSense for material engineering decisions, create or reuse a task-local measurable Goal, and safely delegate authorized work. Does not spawn workers, approve actions, or replace AGENTS.md.
+description: Coordinate measurable software-engineering goals and bounded AI subagent delegation with explicit authorization, evidence-based verification, and safe integration. Use for explicit goal-backed work, delegation, subagents, parallel implementation, independent review, or a multi-agent team. Auto-attempt ForgeGuard and ForgeScope on each invocation, consult EngSense for material engineering decisions, create or reuse a task-local measurable Goal, and safely delegate authorized work. Does not spawn workers, approve actions, or replace AGENTS.md.
 metadata:
   version: "0.1.0"
 ---
 
-# Delegrix — Agent Delegation
+# Delegrix — Goal-Driven Agent Orchestration
 
-Use this skill to **execute delegated work deliberately**, not to maximize worker count. The primary agent retains responsibility for the outcome and final answer. This is an instruction-only skill: actual spawning, cancellation, isolation, and model choice depend on the active agent runtime.
+Use this skill to **execute delegated work deliberately**, not to maximize worker count. The primary agent retains responsibility for the outcome and final answer. This is an instruction-only skill, not an execution service: actual spawning, cancellation, isolation, and model choice depend on the active agent runtime.
 
 ## 1. Automatic ForgeGuard / Goal / ForgeScope bootstrap
 
@@ -66,4 +66,4 @@ See [dispatch and integration](references/dispatch-integration.md).
 
 Summarize: task-local Goal and evidence of its success, ForgeGuard/ForgeScope actual activation modes and EngSense mode/material decision when applicable, primary-agent work, authorization/scope, **workers launched vs meaningful contributors**, worker roles and verified outputs, integrated files, executed checks/results, acceptance criteria, recovery attempts, unresolved criterion IDs, and remaining risks or blockers. For solo tasks, say there were no subagents; do not imply delegation happened.
 
-For expected edge cases see [scenario checks](references/scenarios.md). Always attempt ForgeGuard and ForgeScope proactively when installed, not only when the user requests them. Apply ForgeGuard Goal Intelligence before delegation and ForgeScope narrow review proportionally.  Keep project-level planning with the primary agent or the repository's chosen workflow; Delegrix is not a separate orchestrator runtime.
+For expected edge cases see [scenario checks](references/scenarios.md). Always attempt ForgeGuard and ForgeScope proactively when installed, not only when the user requests them. Apply Delegrix Goal Intelligence and installed ForgeGuard goal policy before delegation; use narrow ForgeScope review proportionally.  Keep project-level planning with the primary agent or the repository's chosen workflow; Delegrix is not a separate orchestrator runtime.
