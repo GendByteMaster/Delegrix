@@ -30,12 +30,14 @@ def _path(value: Any) -> str | None:
     if value.startswith("/") or ":" in value or "*" in value or "?" in value:
         return None
     parts = value.strip("/").split("/")
-    if not parts or any(part in ("", ".", "..") for part in parts):
+    if not parts or any(part in ("", ".", "..") or part.endswith((" ", ".")) for part in parts):
         return None
     return "/".join(parts)
 
 
 def _overlaps(left: str, right: str) -> bool:
+    # Conservative portable comparison: case-only differences can alias on Windows.
+    left, right = left.casefold(), right.casefold()
     return left == right or left.startswith(right + "/") or right.startswith(left + "/")
 
 
@@ -168,7 +170,9 @@ def evaluate(plan: Any) -> list[str]:
         if identifier in ids:
             report("DUPLICATE_WORKER")
         ids.add(identifier)
-        if worker.get("depth", 1) != 1 or worker.get("may_delegate") is True:
+        depth = worker.get("depth", 1)
+        may_delegate = worker.get("may_delegate", False)
+        if type(depth) is not int or depth != 1 or type(may_delegate) is not bool or may_delegate:
             report("NESTED_DELEGATION")
         mode = worker.get("mode")
         if mode not in ("read", "write"):
