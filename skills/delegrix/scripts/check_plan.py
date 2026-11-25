@@ -39,6 +39,66 @@ def _overlaps(left: str, right: str) -> bool:
     return left == right or left.startswith(right + "/") or right.startswith(left + "/")
 
 
+def _goal_mapping(plan: dict, workers: list) -> list[str]:
+    """Validate v2 criterion coverage, not evidence, permissions or completion."""
+    errors: list[str] = []
+
+    def report(code: str) -> None:
+        if code not in errors:
+            errors.append(code)
+
+    goal = plan.get("goal")
+    if not isinstance(goal, dict):
+        return ["INVALID_GOAL"]
+    criteria = goal.get("criteria")
+    if not isinstance(criteria, list) or not criteria or len(criteria) > 128:
+        return ["INVALID_GOAL"]
+    declared: set[str] = set()
+    required: set[str] = set()
+    for criterion in criteria:
+        if not isinstance(criterion, dict):
+            report("INVALID_CRITERION")
+            continue
+        identifier = criterion.get("id")
+        if (not isinstance(identifier, str) or not IDENTIFIER.fullmatch(identifier)
+                or type(criterion.get("required")) is not bool):
+            report("INVALID_CRITERION")
+            continue
+        if identifier in declared:
+            report("DUPLICATE_CRITERION")
+        declared.add(identifier)
+        if criterion["required"]:
+            required.add(identifier)
+
+    covered: set[str] = set()
+
+    def mapping(values: Any, *, nonempty: bool) -> None:
+        if (not isinstance(values, list) or len(values) > 128
+                or (nonempty and not values)):
+            report("INVALID_CRITERION_MAPPING")
+            return
+        seen: set[str] = set()
+        for value in values:
+            if not isinstance(value, str) or not IDENTIFIER.fullmatch(value):
+                report("INVALID_CRITERION_MAPPING")
+                continue
+            if value in seen:
+                report("DUPLICATE_CRITERION_MAPPING")
+            seen.add(value)
+            if value not in declared:
+                report("UNKNOWN_CRITERION")
+            else:
+                covered.add(value)
+
+    mapping(goal.get("coordinator_criteria"), nonempty=False)
+    for worker in workers:
+        if isinstance(worker, dict):
+            mapping(worker.get("criterion_ids"), nonempty=True)
+    if required - covered:
+        report("UNCOVERED_REQUIRED_CRITERION")
+    return errors
+
+
 def evaluate(plan: Any) -> list[str]:
     """Return stable diagnostic codes for unaccepted planning conditions."""
     errors: list[str] = []
@@ -47,7 +107,7 @@ def evaluate(plan: Any) -> list[str]:
         if code not in errors:
             errors.append(code)
 
-    if not isinstance(plan, dict) or type(plan.get("schema_version")) is not int or plan["schema_version"] != 1:
+    if not isinstance(plan, dict) or type(plan.get("schema_version")) is not int or plan["schema_version"] not in (1, 2):
         return ["INVALID_SCHEMA"]
     workers = plan.get("workers")
     if not isinstance(workers, list) or len(workers) > 128:
@@ -165,6 +225,9 @@ def evaluate(plan: Any) -> list[str]:
         for other_owner, other_path in writes[i + 1 :]:
             if owner != other_owner and _overlaps(path, other_path):
                 report("OVERLAPPING_WRITES")
+    if plan["schema_version"] == 2:
+        for code in _goal_mapping(plan, workers):
+            report(code)
     return errors
 
 
