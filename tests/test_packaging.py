@@ -123,6 +123,18 @@ class PackageContract(unittest.TestCase):
             with self.subTest(name=name):
                 self.assertIn("goal-recovery.md", (ROOT / "skills/delegrix" / name).read_text(encoding="utf-8"))
 
+    def test_release_version_coherence(self):
+        import json
+        import re
+
+        version = json.loads((ROOT / "package.json").read_text(encoding="utf-8"))["version"]
+        source = (SKILL / "SKILL.md").read_text(encoding="utf-8")
+        cli = (ROOT / "bin/delegrix.js").read_text(encoding="utf-8")
+        self.assertRegex(version, r"^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)$")
+        self.assertRegex(source, rf"""(?m)^\s*version:\s*(['"]?){re.escape(version)}\1\s*$""")
+        self.assertRegex(cli, rf"""const VERSION = (['"]){re.escape(version)}\1;""")
+        self.assertTrue((ROOT / "docs" / "releases" / f"v{version}.md").is_file())
+
     def test_bundled_preflight_example(self):
         import json
         spec = importlib.util.spec_from_file_location("delegrix_example_check", SKILL / "scripts" / "check_plan.py")
