@@ -1,6 +1,6 @@
 # Goal Intelligence v2 — architecture and compatibility contract
 
-Status: M1 foundation for [issue #2](https://github.com/GendByteMaster/Delegrix/issues/2). This is an instruction-level contract, not a runtime implementation. M2 defines [goal routing](goal-definition.md), [criterion lifecycle and drift](goal-lifecycle.md) and [evidence-based completion](goal-evaluation.md). Worker mapping and detailed recovery remain follow-up milestones.
+Status: M1 foundation for [issue #2](https://github.com/GendByteMaster/Delegrix/issues/2). This is an instruction-level contract, not a runtime implementation. M2 defines [goal routing](goal-definition.md), [criterion lifecycle and drift](goal-lifecycle.md) and [evidence-based completion](goal-evaluation.md). M3 adds [criterion-linked delegation](goal-decomposition.md). Detailed recovery remains a follow-up milestone.
 
 ## Authority
 
