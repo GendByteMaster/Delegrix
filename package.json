@@ -1,6 +1,6 @@
 {
   "name": "@gendbytemaster/delegrix",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Portable Agent Skill for goal-driven orchestration and safe, scoped AI delegation",
   "license": "MIT",
   "type": "module",

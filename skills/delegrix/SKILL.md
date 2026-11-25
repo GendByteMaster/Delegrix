@@ -2,7 +2,7 @@
 name: delegrix
 description: Coordinate measurable software-engineering goals and bounded AI subagent delegation with explicit authorization, evidence-based verification, and safe integration. Use for explicit goal-backed work, delegation, subagents, parallel implementation, independent review, or a multi-agent team. Auto-attempt ForgeGuard and ForgeScope on each invocation, consult EngSense for material engineering decisions, create or reuse a task-local measurable Goal, and safely delegate authorized work. Does not spawn workers, approve actions, or replace AGENTS.md.
 metadata:
-  version: "0.1.0"
+  version: "0.2.0"
 ---
 
 # Delegrix — Goal-Driven Agent Orchestration

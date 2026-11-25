@@ -56,7 +56,7 @@ test('argument validation and version',()=>{
  assert.equal(run(dir,'install','--client','invalid').code,1);
  assert.equal(run(dir,'install','--client').code,1);
  assert.equal(run(dir,'unknown').code,1);
- assert.match(run(dir,'--version').output,/0\.1\.0/);
+ assert.match(run(dir,'--version').output,/0\.2\.0/);
 });
 
 test('refuse nested symlink paths when refreshing or uninstalling', {skip: process.platform === 'win32'}, ()=>{
@@ -76,18 +76,18 @@ test('update refreshes a managed installation and retains unrelated files', ()=>
  assert.equal(run(dir,'install','--client','codex').code,0);
  const dest=join(dir,'.agents','skills','delegrix');
  const skill=join(dest,'SKILL.md');
- writeFileSync(skill,'---\nname: delegrix\nmetadata:\n  version: "0.0.9"\n---\nLegacy Delegrix\n');
+ writeFileSync(skill,'---\nname: delegrix\nmetadata:\n  version: "0.1.0"\n---\nLegacy Delegrix\n');
  writeFileSync(join(dest,'my-notes.txt'),'do not delete');
  const preview=run(dir,'update','--client','codex','--dry-run');
  assert.equal(preview.code,0,preview.output);
  assert.match(preview.output,/would update/);
- assert.match(readFileSync(skill,'utf8'),/0\.0\.9/);
+ assert.match(readFileSync(skill,'utf8'),/0\.1\.0/);
  const updated=run(dir,'update','--client','codex');
  assert.equal(updated.code,0,updated.output);
  assert.match(updated.output,/update/);
- assert.match(readFileSync(skill,'utf8'),/version: "0\.1\.0"/);
+ assert.match(readFileSync(skill,'utf8'),/version: "0\.2\.0"/);
  assert.equal(readFileSync(join(dest,'my-notes.txt'),'utf8'),'do not delete');
- assert.match(run(dir,'status','--client','codex').output,/installed v0\.1\.0/);
+ assert.match(run(dir,'status','--client','codex').output,/installed v0\.2\.0/);
  const again=run(dir,'update','--client','codex');
  assert.equal(again.code,0,again.output);
  assert.match(again.output,/up to date/);
@@ -147,5 +147,5 @@ test('update all refreshes both Codex/Cursor shared and Claude targets', ()=>{
  assert.match(result.output,/codex\+cursor/);
  assert.match(result.output,/claude/);
  for(const base of [join(dir,'.agents','skills'),join(dir,'.claude','skills')])
-   assert.match(readFileSync(join(base,'delegrix','SKILL.md'),'utf8'),/version: "0\.1\.0"/);
+   assert.match(readFileSync(join(base,'delegrix','SKILL.md'),'utf8'),/version: "0\.2\.0"/);
 });

@@ -18,7 +18,7 @@ Delegrix is a portable, instruction-only **Agent Skill** for goal-driven agent o
 
 See [Goal contract](skills/delegrix/assets/task-goal.md) and [integration workflows](skills/delegrix/references/integration-workflows.md) for behavior with ForgeGuard alone, ForgeScope alone, both together, or neither. These are **instruction-level integrations**: no hidden API calls, dependency on their CLI installers, or automatic modification of their state.
 
-## Goal Intelligence v2 (development branch)
+## Goal Intelligence v2
 
 Use a single logical goal within the current task. Native goal creation requires explicit goal-backed intent, confirmed absence of a compatible active goal and supported host tools. Routine work uses concise local criteria. No extra task, thread, goal database or automatic worker launch is required.
 
@@ -112,10 +112,10 @@ The JSON flag `authorization.explicit` is only an *assertion* written in the pla
 
 ## Status
 
-- **v0.1.0**: released baseline; current package metadata remains unchanged until release approval.
-- **v0.2.0**: development candidate for [issue #2](https://github.com/GendByteMaster/Delegrix/issues/2); see [draft release notes](docs/releases/v0.2.0.md). Full acceptance and publication are pending.
+- **v0.1.0**: previous released baseline.
+- **v0.2.0**: versioned release candidate (not yet published) for [issue #2](https://github.com/GendByteMaster/Delegrix/issues/2); see [draft release notes](docs/releases/v0.2.0.md). Full acceptance and publication are pending.
 - Compatibility intent: Codex and Agent Skills-capable hosts; exact features depend on host support.
-- No production or multi-agent runtime acceptance is claimed yet.
+- The pre-promotion candidate passed automated CI and two user-reported Copilot smoke scenarios, including a controlled recovery and independent review. Codex, Claude Code, Cursor and negative recovery acceptance remain open. No general production-readiness claim is made.
 ## ForgeGuard-style CLI installation
 
 Install from GitHub (no npm registry publication needed):
@@ -127,13 +127,30 @@ npx --yes github:GendByteMaster/Delegrix status --client codex --global
 
 For a project install, omit `--global`. To use Claude Code or Cursor, select `--client claude` or `--client cursor`. `--client all` installs all clients, deduplicating shared project paths. `--dry-run` previews changes, `--force` refreshes managed files, and `uninstall` removes Delegrix files while leaving unrelated files alone. The CLI does not manage Codex subagent runtime configuration, approvals or ForgeGuard/ForgeScope workspaces.
 
-After the tagged release, install reproducibly:
+For the previous published baseline, install reproducibly:
 
 ```bash
 npx --yes github:GendByteMaster/Delegrix#v0.1.0 install --client codex --global
 ```
 
+For v0.2.0, use the feature branch until the versioned tag is actually published.
+
 After optional npm publication: `npx @gendbytemaster/delegrix install --client codex --global`.
+
+## Git checkout installation (when npm rejects Git dependencies)
+
+If npm reports `EALLOWGIT`, leave its policy unchanged. Clone the candidate to a separate source directory and run the bundled CLI directly from the intended target project:
+
+```powershell
+$src = Join-Path $env:TEMP ("delegrix-src-" + [guid]::NewGuid().ToString("N"))
+git clone --branch feature/goal-intelligence-v2 https://github.com/GendByteMaster/Delegrix.git $src
+# Review the checkout and record the source commit before installing.
+git -C $src rev-parse HEAD
+node "$src/bin/delegrix.js" install --client codex
+node "$src/bin/delegrix.js" status --client codex
+```
+
+For an existing managed project installation, use `node "$src/bin/delegrix.js" update --client codex --dry-run` and then `node "$src/bin/delegrix.js" update --client codex`. Add `--global` only for a deliberate user-wide installation or update. Pin a reviewed commit with `git -C $src checkout --detach <commit-sha>` when reproducibility matters.
 
 ## Updating Delegrix
 
@@ -162,4 +179,4 @@ npx --yes "github:GendByteMaster/Delegrix#feature/goal-intelligence-v2" update -
 
 ## Release process
 
-Before merging PR, verify Python checks, Node CLI tests, Windows/Linux GitHub Actions and real authorized Codex subagent handoff behavior. On `main`, run **Create GitHub Release** (Actions → workflow_dispatch) with the tag matching approved package metadata and versioned release notes; it validates the artifact and publishes the tag and GitHub Release. Because releases created with the GitHub Actions token do not automatically trigger other GitHub Actions workflows, run **Publish npm** manually with the published tag if you want registry publication. This requires `NPM_TOKEN` to be configured. [Release notes](docs/releases/v0.1.0.md).
+Before merging PR, verify Python checks, Node CLI tests, Windows/Linux GitHub Actions and real authorized Codex subagent handoff behavior. On `main`, run **Create GitHub Release** (Actions → workflow_dispatch) with the tag matching approved package metadata and versioned release notes; it validates the artifact and publishes the tag and GitHub Release. Because releases created with the GitHub Actions token do not automatically trigger other GitHub Actions workflows, run **Publish npm** manually with the published tag if you want registry publication. This requires `NPM_TOKEN` to be configured. [v0.2.0 draft release notes](docs/releases/v0.2.0.md) · [v0.1.0 release notes](docs/releases/v0.1.0.md).

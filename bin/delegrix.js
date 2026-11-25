@@ -5,7 +5,7 @@ import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const SOURCE = fileURLToPath(new URL('../skills/delegrix/', import.meta.url));
-const VERSION = '0.1.0';
+const VERSION = '0.2.0';
 const CLIENTS = ['codex', 'claude', 'cursor'];
 
 function options(argv) {
