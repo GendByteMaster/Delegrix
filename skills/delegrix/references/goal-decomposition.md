@@ -4,6 +4,8 @@ For substantial or explicitly goal-backed work, apply [definition](goal-definiti
 
 ## Plan from criteria, not worker count
 
+If coupling, ownership or the choice of strategy materially affects decomposition, consult [EngSense](engsense-interop.md) first. Its judgment informs the partition; it does not authorize delegation or determine final criterion acceptance.
+
 1. Identify required and optional criteria with stable IDs. Map each required criterion to at least one deliverable or explicit primary-agent work/verification. A criterion can require several contributors; no contributor can accept it on behalf of the coordinator.
 2. Choose distinct deliverables with bounded scope, dependency inputs, expected output and verification. Map each delegated deliverable to one or more criterion IDs; independent read-only reviews may map the same IDs as implementers.
 3. Prefer solo work for tightly coupled or small changes. Obtain live scope-specific authorization before dispatch; goal-backed intent alone does not authorize workers. Do not force workers to fill a quota.
