@@ -1,6 +1,6 @@
 # Goal Intelligence v2 — architecture and compatibility contract
 
-Status: M1 foundation for [issue #2](https://github.com/GendByteMaster/Delegrix/issues/2). This is an instruction-level contract, not a runtime implementation. M2 defines [goal routing](goal-definition.md), [criterion lifecycle and drift](goal-lifecycle.md) and [evidence-based completion](goal-evaluation.md). M3 adds [criterion-linked delegation](goal-decomposition.md). Detailed recovery remains a follow-up milestone.
+Status: M1 foundation for [issue #2](https://github.com/GendByteMaster/Delegrix/issues/2). This is an instruction-level contract, not a runtime implementation. M2 defines [goal routing](goal-definition.md), [criterion lifecycle and drift](goal-lifecycle.md) and [evidence-based completion](goal-evaluation.md). M3 adds [criterion-linked delegation](goal-decomposition.md). M4 adds [conditional EngSense consultation](engsense-interop.md). Detailed recovery remains a follow-up milestone.
 
 ## Authority
 
@@ -8,7 +8,7 @@ Status: M1 foundation for [issue #2](https://github.com/GendByteMaster/Delegrix/
 - Primary agent: interpretation of user intent, task-local goal, decisions, integrated evidence and final acceptance.
 - Delegrix: goal execution guidance, decomposition, coordination and completion criteria.
 - ForgeGuard (optional): applicable engineering policy, authorization, risk and verification constraints, including its installed goal policy.
-- EngSense (optional, planned M4): contextual engineering judgment; never a permission or verification authority.
+- EngSense (optional): contextual engineering judgment; never a permission or verification authority.
 - ForgeScope (optional): scoped review and evidence-backed findings.
 
 Host instruction hierarchy and user authorization remain binding. A goal cannot extend scope or grant execution rights. Do not modify companion configurations or automatically install any skill.
@@ -38,7 +38,7 @@ For substantial or explicit goal-backed work, stable criterion IDs, required/opt
 
 ## Companion interoperability
 
-Preserve the existing ForgeGuard-first and ForgeScope review workflow during M1. A later EngSense routing module should select relevant guidance only for material engineering trade-offs, decomposition or repair. Avoid recursive skill invocation and competing goal ownership. A missing companion must not prevent permitted standalone execution. Actual activation modes must be reported accurately.
+Preserve the existing ForgeGuard-first and ForgeScope review workflow. Apply [EngSense routing](engsense-interop.md) only for material engineering trade-offs, decomposition or repair. Avoid recursive skill invocation and competing goal ownership. A missing companion must not prevent permitted standalone execution. Actual activation modes must be reported accurately.
 
 ## Compatibility and boundaries
 
