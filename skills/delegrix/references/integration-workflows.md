@@ -8,8 +8,9 @@ Read on EVERY Delegrix invocation. Automatically attempt ForgeGuard and ForgeSco
 2. ForgeGuard: activate the installed `engineering-guardrails` Skill through host-native invocation; else load and apply `engineering-guardrails/SKILL.md` and relevant policies. Record `host-activated`, `instructions-loaded` or `unavailable`.
 3. Goal: create or reuse a measurable task-local Goal using [goal definition and routing](goal-definition.md) and [the goal template](../assets/task-goal.md), honoring installed ForgeGuard policy. It is attached to this task, NEVER a separate task, chat, thread, worktree or worker. For trivial tasks use local criteria; create native goal state only for explicit goal-backed intent, confirmed absence and supported host capabilities. Reuse compatible native state.
 4. ForgeScope: activate the installed `forgescope` Skill using host-native selection; else load and apply its installed `SKILL.md` and relevant review rules. Record the actual mode. Select targeted review for coding tasks, analysis-only when requested, and full audit ONLY when justified. Do not mutate its ledger without review need.
-5. Delegrix: decide meaningful delegation under existing permissions, build worker contracts using [goal decomposition](goal-decomposition.md) for substantial work, dispatch via host, verify handoffs, and reconcile Goal success and review findings using [lifecycle](goal-lifecycle.md) and [evaluation](goal-evaluation.md) for substantial work.
-6. Report companion activation and Goal completion evidence honestly.
+5. EngSense (conditional): consult the installed Skill only when material strategy, decomposition or recovery decisions warrant [engineering judgment](engsense-interop.md). Record actual mode or `not-needed`; preserve the preceding activation order.
+6. Delegrix: decide meaningful delegation under existing permissions, build worker contracts using [goal decomposition](goal-decomposition.md) for substantial work, dispatch via host, verify handoffs, and reconcile Goal success and review findings using [lifecycle](goal-lifecycle.md) and [evaluation](goal-evaluation.md) for substantial work.
+7. Report companion activation and Goal completion evidence honestly.
 
 ## Installed Skill detection
 
@@ -29,6 +30,7 @@ Read on EVERY Delegrix invocation. Automatically attempt ForgeGuard and ForgeSco
 | --- | --- |
 | Whether delegation is permitted | User's current, scoped authorization + host platform; ForgeGuard policy when active |
 | Goal guidance and risk gate | Delegrix [goal architecture](goal-architecture.md); installed ForgeGuard policy remains binding when active |
+| Contextual engineering judgment | EngSense when useful and available; primary agent accepts decisions within binding policy |
 | Goal ownership and success evidence | Primary agent, within current task |
 | Whether delegation is useful | ForgeGuard Delegation Intelligence, when active; Delegrix otherwise |
 | Audit scope, finding severity and review evidence | ForgeScope, when active for a review |
@@ -44,6 +46,8 @@ Read on EVERY Delegrix invocation. Automatically attempt ForgeGuard and ForgeSco
 | Delegrix + ForgeGuard | Auto-load ForgeGuard, create/reuse Goal, honor its policies and report ForgeScope missing |
 | Delegrix + ForgeScope | Auto-load ForgeScope, create task-local Goal, select scoped review and report ForgeGuard missing |
 | All three | Auto-activate ForgeGuard, establish Goal, auto-activate ForgeScope; Delegrix owns worker contracts; primary agent integrates and verifies |
+
+EngSense is an independent optional axis: each row above works with EngSense consulted when needed, or without it. See [EngSense integration](engsense-interop.md) for discovery and fallback.
 
 ## Delegation procedure
 
