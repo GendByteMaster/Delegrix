@@ -55,6 +55,26 @@ class PlanScenarios(unittest.TestCase):
         solo["goal"]["coordinator_criteria"] = ["C1", "C2", "C3"]
         self.assertEqual(preflight.evaluate(solo), [])
 
+    def test_portable_write_ownership_and_strict_depth(self):
+        from copy import deepcopy
+
+        plan = {"schema_version": 1, "authorization": {"explicit": True},
+                "workers": [{"id": "one", "mode": "write", "write_paths": ["src/Foo"]},
+                            {"id": "two", "mode": "write", "write_paths": ["src/bar"]}]}
+        self.assertEqual(preflight.evaluate(plan), [])
+        cases = [
+            (lambda p: p["workers"][1].update(write_paths=["SRC/foo"]), "OVERLAPPING_WRITES"),
+            (lambda p: p["workers"][1].update(write_paths=["src/foo/file.py"]), "OVERLAPPING_WRITES"),
+            (lambda p: p["workers"][0].update(write_paths=["src/Foo."]), "INVALID_SCOPE"),
+            (lambda p: p["workers"][0].update(write_paths=["src /Foo"]), "INVALID_SCOPE"),
+            (lambda p: p["workers"][0].update(depth=True), "NESTED_DELEGATION"),
+            (lambda p: p["workers"][0].update(may_delegate="false"), "NESTED_DELEGATION"),
+        ]
+        for mutate, expected in cases:
+            candidate = deepcopy(plan)
+            mutate(candidate)
+            self.assertIn(expected, preflight.evaluate(candidate))
+
     def test_not_a_live_authorization_verifier(self):
         # A syntactically valid `explicit` flag does not prove the user granted consent.
         plan = {"schema_version": 1, "authorization": {"explicit": True}, "workers": [{"id": "worker", "mode": "read"}]}
