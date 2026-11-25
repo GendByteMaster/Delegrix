@@ -28,7 +28,7 @@ Read on EVERY Delegrix invocation. Automatically attempt ForgeGuard and ForgeSco
 | Decision or state | Primary authority |
 | --- | --- |
 | Whether delegation is permitted | User's current, scoped authorization + host platform; ForgeGuard policy when active |
-| Goal Intelligence and risk gate | ForgeGuard when active; task-local Goal contract otherwise |
+| Goal guidance and risk gate | Delegrix [goal architecture](goal-architecture.md); installed ForgeGuard policy remains binding when active |
 | Goal ownership and success evidence | Primary agent, within current task |
 | Whether delegation is useful | ForgeGuard Delegation Intelligence, when active; Delegrix otherwise |
 | Audit scope, finding severity and review evidence | ForgeScope, when active for a review |
