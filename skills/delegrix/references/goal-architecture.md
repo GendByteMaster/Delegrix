@@ -1,6 +1,6 @@
 # Goal Intelligence v2 — architecture and compatibility contract
 
-Status: M1 foundation for [issue #2](https://github.com/GendByteMaster/Delegrix/issues/2). This is an instruction-level contract, not a runtime implementation. Lifecycle execution, criterion tracking, worker mapping and recovery modules are follow-up milestones.
+Status: M1 foundation for [issue #2](https://github.com/GendByteMaster/Delegrix/issues/2). This is an instruction-level contract, not a runtime implementation. M2 defines [goal routing](goal-definition.md), [criterion lifecycle and drift](goal-lifecycle.md) and [evidence-based completion](goal-evaluation.md). Worker mapping and detailed recovery remain follow-up milestones.
 
 ## Authority
 
@@ -34,7 +34,7 @@ Do not assume tool names are present. Do not set an unrequested token budget. If
 
 For substantial work identify the outcome, target, success criteria, evidence method, scope, exclusions and stop/escalation conditions. Criteria must be observable and preserve important repository invariants. A narrow task may express these in one concise statement. The existing [task-goal template](../assets/task-goal.md) remains compatible.
 
-For subsequent milestones, stable criterion IDs, required/optional classification and evidence freshness are design requirements. No required criterion may be silently weakened or removed to declare completion. Evidence must correspond to the integrated result; a worker claim or structural preflight alone cannot establish success.
+For substantial or explicit goal-backed work, stable criterion IDs, required/optional classification and evidence freshness are required by the M2 guidance. No required criterion may be silently weakened or removed to declare completion. Evidence must correspond to the integrated result; a worker claim or structural preflight alone cannot establish success.
 
 ## Companion interoperability
 
