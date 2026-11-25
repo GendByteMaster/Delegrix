@@ -11,7 +11,7 @@ Apply this guidance when substantial or explicitly goal-backed work has failed, 
 
 ## Bound the loop
 
-Before the first repair attempt, set a finite attempt limit appropriate to the current failure episode. Default to at most two repair attempts per episode; respect any stricter user, project, host or ForgeGuard limit. This is a repair-attempt ceiling, not a token budget or permission to launch workers. Count unsuccessful attempts and replacements; count actual worker launches separately under the existing delegation limits. Re-entering a turn, renaming a failure or changing the worker does not reset the episode. If a prior attempt count cannot be reconciled, do not assume a fresh budget.
+Before the first repair attempt, set a finite attempt limit appropriate to the current failure episode. Default to at most two repair attempts per episode and four across the current goal; respect any stricter user, project, host or ForgeGuard limit. Exceed these defaults only after explicit authorization and a new evidence-supported plan. This is a repair-attempt ceiling, not a token budget or permission to launch workers. Count every attempted repair, including unsuccessful attempts and repairs assigned to replacement workers; count actual worker launches separately under the existing delegation limits. Re-entering a turn, renaming a failure or changing the worker does not reset the episode. If a prior attempt count cannot be reconciled, do not assume a fresh budget.
 
 For each attempt:
 - Record affected criteria, prior evidence, hypothesis, proposed change/check, attempt number and remaining permitted attempts.
