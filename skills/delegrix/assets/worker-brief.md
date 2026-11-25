@@ -10,6 +10,8 @@
 
 **Constraints:** {{architecture_security_api_persistence_performance_policy}}
 
+**Goal criterion IDs (when applicable):** {{criterion_ids_and_relevant_predicates}}
+
 **Acceptance criteria:** {{observable_requirements}}
 
 **Verification:** {{specific_available_checks_to_execute_and_report}}
