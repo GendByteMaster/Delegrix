@@ -33,6 +33,7 @@ Use this skill to **execute delegated work deliberately**, not to maximize worke
 Before dispatch, specify:
 
 - objective and tangible deliverable;
+- for substantial or explicit goal-backed work, map deliverables to criterion IDs using [goal decomposition](references/goal-decomposition.md); assign uncovered criteria to the primary agent;
 - owned files/modules or read-only investigation surface; explicit forbidden scope;
 - dependencies, relevant interfaces, security/compatibility/quality constraints;
 - acceptance criteria and verification commands or evidence;
@@ -46,7 +47,7 @@ Use [worker contract](references/worker-contract.md) and the copyable [worker br
 - Assign a single implementation owner for each mutable file, contract, migration, or schema at a time. Independent read-only reviewers may inspect overlapping code.
 - Use isolated worktrees or equivalent working copies when available; otherwise serialize overlapping writes and guard the user's uncommitted changes.
 - Dispatch only dependency-ready tasks, in bounded waves, respecting user-approved total workers, platform concurrency, repository caps, and ForgeGuard policy. **Total launched** includes failed/replacement/nested workers where applicable; track substantive contributors separately.
-- For a nontrivial team, optionally validate an explicit JSON plan with `python skills/delegrix/scripts/check_plan.py <plan.json>` before dispatch and after budget changes. The [example plan](assets/preflight-example.json) is a format illustration, **not user authorization**. Preflight is advisory and cannot verify live consent or real worker execution.
+- For a nontrivial team, optionally validate an explicit JSON plan with `python skills/delegrix/scripts/check_plan.py <plan.json>` before dispatch and after budget changes. For goal-linked plans, use schema v2 and the [goal-linked example](assets/goal-preflight-example.json); v1 remains supported. The [example plan](assets/preflight-example.json) is a format illustration, **not user authorization**. Preflight is advisory and cannot verify live consent or real worker execution.
 - Default to depth 1. Workers must not spawn further workers unless both active platform capabilities and an explicit scope-specific policy/approval allow it; when ForgeGuard v1.6.1 is applicable, keep its depth-1 restriction.
 - Don't silently select a different model, reasoning effort, provider, or fallback. Use only runtime-supported choices and approved constraints.
 
@@ -55,7 +56,7 @@ See [dispatch and integration](references/dispatch-integration.md).
 ## 5. Validate, integrate, and recover
 
 - Require the [handoff](assets/handoff.md): assigned scope, real files changed, behavior, tests run/results, findings, limitations, and any scope not touched.
-- Verify the *actual* change and source evidence, not a self-reported `PASS`; inspect diffs before accepting patches. Reject unrelated edits and resolve conflicting assumptions before integration.
+- Verify the *actual* change and source evidence, not a self-reported `PASS`; inspect diffs before accepting patches. Accept upstream handoffs before downstream dispatch; reconcile mapped criteria against the integrated result. Reject unrelated edits and resolve conflicting assumptions before integration.
 - Primary agent runs integration-level verification and checks every acceptance criterion against the task-local Goal. For substantial or explicit goal-backed work, apply [criterion evidence and completion](references/goal-evaluation.md): reconcile criteria after integration and invalidate stale evidence; every mandatory criterion and applicable gate must pass before claiming completion. Use ForgeScope for a proportionate review when installed; the primary agent validates findings and retains final acceptance. A reviewer should inspect integrated code for high-risk work, subject to the applicable project's stricter rules.
 - For a failure, diagnose before a bounded retry. Reuse the owner when practical; replacements consume approval and launch budgets. Stop on exhausted budget, unresolvable conflict, revocation, unauthorized risk, or missing runtime capability; report the blocking reason honestly.
 - Do not claim workers were stopped or tools executed when no tool confirmation exists. Do not auto-merge, deploy, run destructive operations, or alter external project state without applicable authorization.
